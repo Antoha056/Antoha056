@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_SrokGodnosti"
+                  name="Контроль срока годности маркированного товара"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="StormBPMN compatible"
+                  exporterVersion="1.0">
+  <bpmn:category id="Category_1">
+    <bpmn:categoryValue id="CategoryValue_Client" value="Заказ клиенту (резерв 24ч)"/>
+    <bpmn:categoryValue id="CategoryValue_Sto" value="Продажа на СТО (отдельный товарный чек)"/>
+  </bpmn:category>
+  <bpmn:process id="Process_SrokGodnosti" name="Контроль срока годности КИЗ" isExecutable="false">
+    <bpmn:documentation>Правило: срок годности проверяется к дате передачи товара, а не к дате сборки.
+Заказ клиенту: на сборке остаток срока не менее 2 суток; продление резерва только если срок покрывает новую дату; на кассе повторная проверка, КИЗ выводится в чеке оплаты.
+СТО: товар отдельным чеком, не в услуге. На сборке срок должен покрывать плановую выдачу авто + 2 суток. Если дату выдачи сдвинули и товар ещё не установлен — подобрать другой КИЗ. Если уже залили/установили — пробить товарный чек сразу, не ждать выдачи авто.</bpmn:documentation>
+    <bpmn:group id="Group_Client" categoryValueRef="CategoryValue_Client"/>
+    <bpmn:group id="Group_Sto" categoryValueRef="CategoryValue_Sto"/>
+    <bpmn:startEvent id="StartEvent_1" name="Старт" />
+    <bpmn:exclusiveGateway id="Gateway_Channel" name="Какой канал продажи?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_CreateOrder" name="Создать накладную и резерв 24ч" />
+    <bpmn:userTask id="Task_PickClient" name="Собрать маркированный товар" />
+    <bpmn:serviceTask id="Task_Check2d" name="Проверить остаток срока годности" />
+    <bpmn:exclusiveGateway id="Gateway_Shelf" name="Остаток срока не менее 2 суток?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_Reserve" name="Зарезервировать КИЗ" />
+    <bpmn:exclusiveGateway id="Gateway_Extend" name="Продлевают резерв?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_CheckExt" name="Проверить срок на новую дату резерва" />
+    <bpmn:exclusiveGateway id="Gateway_ExtOk" name="Срок покрывает продление?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_DoExt" name="Продлить резерв" />
+    <bpmn:exclusiveGateway id="Gateway_ExtJoin" gatewayDirection="Converging" />
+    <bpmn:serviceTask id="Task_CheckPay" name="Проверить срок при оплате" />
+    <bpmn:exclusiveGateway id="Gateway_Pay" name="КИЗ годен на кассе?" gatewayDirection="Diverging" />
+    <bpmn:userTask id="Task_Receipt" name="Пробить чек и вывести КИЗ" />
+    <bpmn:endEvent id="EndEvent_ClientOk" name="Продажа клиенту выполнена" />
+    <bpmn:serviceTask id="Task_MsgBlock" name="Сообщить и заблокировать КИЗ" />
+    <bpmn:userTask id="Task_Repick" name="Подобрать другой товар" />
+    <bpmn:serviceTask id="Task_NoExt" name="Не продлевать, вывести сообщение" />
+    <bpmn:userTask id="Task_RepickExt" name="Подобрать другой товар" />
+    <bpmn:userTask id="Task_BlockSale" name="Заблокировать продажу" />
+    <bpmn:endEvent id="EndEvent_ClientCancel" name="Продажа отменена" />
+    <bpmn:userTask id="Task_PlanDate" name="Зафиксировать дату выдачи авто" />
+    <bpmn:userTask id="Task_PickSto" name="Собрать товар отдельной позицией" />
+    <bpmn:serviceTask id="Task_CheckPlan" name="Проверить срок до даты выдачи" />
+    <bpmn:exclusiveGateway id="Gateway_PlanOk" name="Срок покрывает выдачу + 2 суток?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_ReserveSto" name="Зарезервировать КИЗ" />
+    <bpmn:userTask id="Task_Install" name="Установить / залить товар" />
+    <bpmn:exclusiveGateway id="Gateway_Shift" name="Дату выдачи авто перенесли?" gatewayDirection="Diverging" />
+    <bpmn:userTask id="Task_ReceiptSto" name="Пробить отдельный товарный чек" />
+    <bpmn:endEvent id="EndEvent_StoOk" name="Продажа на СТО выполнена" />
+    <bpmn:serviceTask id="Task_MsgOther" name="Сообщить: другой срок годности" />
+    <bpmn:userTask id="Task_RepickSto" name="Подобрать другой товар" />
+    <bpmn:exclusiveGateway id="Gateway_Installed" name="Товар уже установлен?" gatewayDirection="Diverging" />
+    <bpmn:userTask id="Task_RepickDate" name="Подобрать КИЗ под новую дату" />
+    <bpmn:userTask id="Task_ReceiptNow" name="Пробить товарный чек сразу" />
+    <bpmn:endEvent id="EndEvent_StoEarly" name="КИЗ выведен до выдачи авто" />
+    <bpmn:sequenceFlow id="Flow_start" sourceRef="StartEvent_1" targetRef="Gateway_Channel" />
+    <bpmn:sequenceFlow id="Flow_to_client" sourceRef="Gateway_Channel" targetRef="Task_CreateOrder" name="Заказ клиенту" />
+    <bpmn:sequenceFlow id="Flow_to_sto" sourceRef="Gateway_Channel" targetRef="Task_PlanDate" name="Продажа на СТО" />
+    <bpmn:sequenceFlow id="Flow_c1" sourceRef="Task_CreateOrder" targetRef="Task_PickClient" />
+    <bpmn:sequenceFlow id="Flow_c2" sourceRef="Task_PickClient" targetRef="Task_Check2d" />
+    <bpmn:sequenceFlow id="Flow_c3" sourceRef="Task_Check2d" targetRef="Gateway_Shelf" />
+    <bpmn:sequenceFlow id="Flow_c_shelf_yes" sourceRef="Gateway_Shelf" targetRef="Task_Reserve" name="Да" />
+    <bpmn:sequenceFlow id="Flow_c4" sourceRef="Task_Reserve" targetRef="Gateway_Extend" />
+    <bpmn:sequenceFlow id="Flow_c_ext_yes" sourceRef="Gateway_Extend" targetRef="Task_CheckExt" name="Да" />
+    <bpmn:sequenceFlow id="Flow_c5" sourceRef="Task_CheckExt" targetRef="Gateway_ExtOk" />
+    <bpmn:sequenceFlow id="Flow_c_extok_yes" sourceRef="Gateway_ExtOk" targetRef="Task_DoExt" name="Да" />
+    <bpmn:sequenceFlow id="Flow_c6" sourceRef="Task_DoExt" targetRef="Gateway_ExtJoin" />
+    <bpmn:sequenceFlow id="Flow_c_ext_no" sourceRef="Gateway_Extend" targetRef="Gateway_ExtJoin" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_c7" sourceRef="Gateway_ExtJoin" targetRef="Task_CheckPay" />
+    <bpmn:sequenceFlow id="Flow_c8" sourceRef="Task_CheckPay" targetRef="Gateway_Pay" />
+    <bpmn:sequenceFlow id="Flow_c_pay_yes" sourceRef="Gateway_Pay" targetRef="Task_Receipt" name="Да" />
+    <bpmn:sequenceFlow id="Flow_c9" sourceRef="Task_Receipt" targetRef="EndEvent_ClientOk" />
+    <bpmn:sequenceFlow id="Flow_c_shelf_no" sourceRef="Gateway_Shelf" targetRef="Task_MsgBlock" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_c10b" sourceRef="Task_MsgBlock" targetRef="Task_Repick" />
+    <bpmn:sequenceFlow id="Flow_c_loop_shelf" sourceRef="Task_Repick" targetRef="Task_Check2d" name="Повторная сборка" />
+    <bpmn:sequenceFlow id="Flow_c_extok_no" sourceRef="Gateway_ExtOk" targetRef="Task_NoExt" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_c11" sourceRef="Task_NoExt" targetRef="Task_RepickExt" />
+    <bpmn:sequenceFlow id="Flow_c_loop_ext" sourceRef="Task_RepickExt" targetRef="Task_Check2d" name="Повторная сборка" />
+    <bpmn:sequenceFlow id="Flow_c_pay_no" sourceRef="Gateway_Pay" targetRef="Task_BlockSale" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_c12" sourceRef="Task_BlockSale" targetRef="EndEvent_ClientCancel" />
+    <bpmn:sequenceFlow id="Flow_s1" sourceRef="Task_PlanDate" targetRef="Task_PickSto" />
+    <bpmn:sequenceFlow id="Flow_s2" sourceRef="Task_PickSto" targetRef="Task_CheckPlan" />
+    <bpmn:sequenceFlow id="Flow_s3" sourceRef="Task_CheckPlan" targetRef="Gateway_PlanOk" />
+    <bpmn:sequenceFlow id="Flow_s_yes" sourceRef="Gateway_PlanOk" targetRef="Task_ReserveSto" name="Да" />
+    <bpmn:sequenceFlow id="Flow_s4" sourceRef="Task_ReserveSto" targetRef="Task_Install" />
+    <bpmn:sequenceFlow id="Flow_s5" sourceRef="Task_Install" targetRef="Gateway_Shift" />
+    <bpmn:sequenceFlow id="Flow_s_shift_no" sourceRef="Gateway_Shift" targetRef="Task_ReceiptSto" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_s6" sourceRef="Task_ReceiptSto" targetRef="EndEvent_StoOk" />
+    <bpmn:sequenceFlow id="Flow_s_plan_no" sourceRef="Gateway_PlanOk" targetRef="Task_MsgOther" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_s7" sourceRef="Task_MsgOther" targetRef="Task_RepickSto" />
+    <bpmn:sequenceFlow id="Flow_s_loop" sourceRef="Task_RepickSto" targetRef="Task_CheckPlan" name="Повторная сборка" />
+    <bpmn:sequenceFlow id="Flow_s_shift_yes" sourceRef="Gateway_Shift" targetRef="Gateway_Installed" name="Да" />
+    <bpmn:sequenceFlow id="Flow_s_inst_no" sourceRef="Gateway_Installed" targetRef="Task_RepickDate" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_s_loop_date" sourceRef="Task_RepickDate" targetRef="Task_CheckPlan" name="Повторная проверка" />
+    <bpmn:sequenceFlow id="Flow_s_inst_yes" sourceRef="Gateway_Installed" targetRef="Task_ReceiptNow" name="Да" />
+    <bpmn:sequenceFlow id="Flow_s8" sourceRef="Task_ReceiptNow" targetRef="EndEvent_StoEarly" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Контроль срока годности маркированного товара">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_SrokGodnosti">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="80.0" y="361.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Channel_di" bpmnElement="Gateway_Channel" isMarkerVisible="true">
+        <dc:Bounds x="220.0" y="354.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CreateOrder_di" bpmnElement="Task_CreateOrder">
+        <dc:Bounds x="400.0" y="130.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PickClient_di" bpmnElement="Task_PickClient">
+        <dc:Bounds x="600.0" y="130.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Check2d_di" bpmnElement="Task_Check2d">
+        <dc:Bounds x="800.0" y="130.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Shelf_di" bpmnElement="Gateway_Shelf" isMarkerVisible="true">
+        <dc:Bounds x="1000.0" y="144.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Reserve_di" bpmnElement="Task_Reserve">
+        <dc:Bounds x="1090.0" y="130.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Extend_di" bpmnElement="Gateway_Extend" isMarkerVisible="true">
+        <dc:Bounds x="1290.0" y="144.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CheckExt_di" bpmnElement="Task_CheckExt">
+        <dc:Bounds x="1380.0" y="130.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ExtOk_di" bpmnElement="Gateway_ExtOk" isMarkerVisible="true">
+        <dc:Bounds x="1580.0" y="144.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DoExt_di" bpmnElement="Task_DoExt">
+        <dc:Bounds x="1670.0" y="130.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ExtJoin_di" bpmnElement="Gateway_ExtJoin" isMarkerVisible="true">
+        <dc:Bounds x="1870.0" y="144.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CheckPay_di" bpmnElement="Task_CheckPay">
+        <dc:Bounds x="1960.0" y="130.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Pay_di" bpmnElement="Gateway_Pay" isMarkerVisible="true">
+        <dc:Bounds x="2160.0" y="144.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Receipt_di" bpmnElement="Task_Receipt">
+        <dc:Bounds x="2250.0" y="130.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ClientOk_di" bpmnElement="EndEvent_ClientOk">
+        <dc:Bounds x="2450.0" y="151.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_MsgBlock_di" bpmnElement="Task_MsgBlock">
+        <dc:Bounds x="920.0" y="300.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Repick_di" bpmnElement="Task_Repick">
+        <dc:Bounds x="720.0" y="300.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_NoExt_di" bpmnElement="Task_NoExt">
+        <dc:Bounds x="1480.0" y="300.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RepickExt_di" bpmnElement="Task_RepickExt">
+        <dc:Bounds x="1280.0" y="300.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BlockSale_di" bpmnElement="Task_BlockSale">
+        <dc:Bounds x="2080.0" y="300.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_ClientCancel_di" bpmnElement="EndEvent_ClientCancel">
+        <dc:Bounds x="2280.0" y="321.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PlanDate_di" bpmnElement="Task_PlanDate">
+        <dc:Bounds x="400.0" y="560.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PickSto_di" bpmnElement="Task_PickSto">
+        <dc:Bounds x="600.0" y="560.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CheckPlan_di" bpmnElement="Task_CheckPlan">
+        <dc:Bounds x="800.0" y="560.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_PlanOk_di" bpmnElement="Gateway_PlanOk" isMarkerVisible="true">
+        <dc:Bounds x="1000.0" y="574.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReserveSto_di" bpmnElement="Task_ReserveSto">
+        <dc:Bounds x="1090.0" y="560.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Install_di" bpmnElement="Task_Install">
+        <dc:Bounds x="1290.0" y="560.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Shift_di" bpmnElement="Gateway_Shift" isMarkerVisible="true">
+        <dc:Bounds x="1490.0" y="574.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReceiptSto_di" bpmnElement="Task_ReceiptSto">
+        <dc:Bounds x="1580.0" y="560.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_StoOk_di" bpmnElement="EndEvent_StoOk">
+        <dc:Bounds x="1780.0" y="581.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_MsgOther_di" bpmnElement="Task_MsgOther">
+        <dc:Bounds x="920.0" y="730.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RepickSto_di" bpmnElement="Task_RepickSto">
+        <dc:Bounds x="720.0" y="730.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Installed_di" bpmnElement="Gateway_Installed" isMarkerVisible="true">
+        <dc:Bounds x="1490.0" y="744.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RepickDate_di" bpmnElement="Task_RepickDate">
+        <dc:Bounds x="1290.0" y="730.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReceiptNow_di" bpmnElement="Task_ReceiptNow">
+        <dc:Bounds x="1580.0" y="730.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_StoEarly_di" bpmnElement="EndEvent_StoEarly">
+        <dc:Bounds x="1780.0" y="751.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Group_Client_di" bpmnElement="Group_Client">
+        <dc:Bounds x="370.0" y="70.0" width="2140.0" height="340.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Group_Sto_di" bpmnElement="Group_Sto">
+        <dc:Bounds x="370.0" y="500.0" width="1480.0" height="340.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_start_di" bpmnElement="Flow_start">
+          <di:waypoint x="116.0" y="379.0" />
+          <di:waypoint x="220.0" y="379.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_client_di" bpmnElement="Flow_to_client">
+          <di:waypoint x="270.0" y="379.0" />
+          <di:waypoint x="310.0" y="379.0" />
+          <di:waypoint x="310.0" y="169.0" />
+          <di:waypoint x="400.0" y="169.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="262.5" y="151.0" width="120.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_sto_di" bpmnElement="Flow_to_sto">
+          <di:waypoint x="270.0" y="379.0" />
+          <di:waypoint x="310.0" y="379.0" />
+          <di:waypoint x="310.0" y="599.0" />
+          <di:waypoint x="400.0" y="599.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="258.5" y="361.0" width="128.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c1_di" bpmnElement="Flow_c1">
+          <di:waypoint x="560.0" y="169.0" />
+          <di:waypoint x="600.0" y="169.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c2_di" bpmnElement="Flow_c2">
+          <di:waypoint x="760.0" y="169.0" />
+          <di:waypoint x="800.0" y="169.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c3_di" bpmnElement="Flow_c3">
+          <di:waypoint x="960.0" y="169.0" />
+          <di:waypoint x="1000.0" y="169.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c_shelf_yes_di" bpmnElement="Flow_c_shelf_yes">
+          <di:waypoint x="1050.0" y="169.0" />
+          <di:waypoint x="1090.0" y="169.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1030.0" y="151.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c4_di" bpmnElement="Flow_c4">
+          <di:waypoint x="1250.0" y="169.0" />
+          <di:waypoint x="1290.0" y="169.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c_ext_yes_di" bpmnElement="Flow_c_ext_yes">
+          <di:waypoint x="1340.0" y="169.0" />
+          <di:waypoint x="1380.0" y="169.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1320.0" y="151.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c5_di" bpmnElement="Flow_c5">
+          <di:waypoint x="1540.0" y="169.0" />
+          <di:waypoint x="1580.0" y="169.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c_extok_yes_di" bpmnElement="Flow_c_extok_yes">
+          <di:waypoint x="1630.0" y="169.0" />
+          <di:waypoint x="1670.0" y="169.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1610.0" y="151.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c6_di" bpmnElement="Flow_c6">
+          <di:waypoint x="1830.0" y="169.0" />
+          <di:waypoint x="1870.0" y="169.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c_ext_no_di" bpmnElement="Flow_c_ext_no">
+          <di:waypoint x="1315.0" y="194.0" />
+          <di:waypoint x="1315.0" y="222.0" />
+          <di:waypoint x="1895.0" y="222.0" />
+          <di:waypoint x="1895.0" y="194.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1565.0" y="176.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c7_di" bpmnElement="Flow_c7">
+          <di:waypoint x="1920.0" y="169.0" />
+          <di:waypoint x="1960.0" y="169.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c8_di" bpmnElement="Flow_c8">
+          <di:waypoint x="2120.0" y="169.0" />
+          <di:waypoint x="2160.0" y="169.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c_pay_yes_di" bpmnElement="Flow_c_pay_yes">
+          <di:waypoint x="2210.0" y="169.0" />
+          <di:waypoint x="2250.0" y="169.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2190.0" y="151.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c9_di" bpmnElement="Flow_c9">
+          <di:waypoint x="2410.0" y="169.0" />
+          <di:waypoint x="2450.0" y="169.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c_shelf_no_di" bpmnElement="Flow_c_shelf_no">
+          <di:waypoint x="1025.0" y="194.0" />
+          <di:waypoint x="1025.0" y="300.0" />
+          <di:waypoint x="1000.0" y="300.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="976.7" y="176.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c10b_di" bpmnElement="Flow_c10b">
+          <di:waypoint x="920.0" y="339.0" />
+          <di:waypoint x="880.0" y="339.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c_loop_shelf_di" bpmnElement="Flow_c_loop_shelf">
+          <di:waypoint x="800.0" y="300.0" />
+          <di:waypoint x="800.0" y="208.0" />
+          <di:waypoint x="880.0" y="208.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="754.7" y="190.0" width="144.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c_extok_no_di" bpmnElement="Flow_c_extok_no">
+          <di:waypoint x="1605.0" y="194.0" />
+          <di:waypoint x="1605.0" y="300.0" />
+          <di:waypoint x="1560.0" y="300.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1550.0" y="176.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c11_di" bpmnElement="Flow_c11">
+          <di:waypoint x="1480.0" y="339.0" />
+          <di:waypoint x="1440.0" y="339.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c_loop_ext_di" bpmnElement="Flow_c_loop_ext">
+          <di:waypoint x="1280.0" y="339.0" />
+          <di:waypoint x="700.0" y="339.0" />
+          <di:waypoint x="700.0" y="218.0" />
+          <di:waypoint x="880.0" y="218.0" />
+          <di:waypoint x="880.0" y="208.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="816.0" y="190.0" width="144.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c_pay_no_di" bpmnElement="Flow_c_pay_no">
+          <di:waypoint x="2185.0" y="194.0" />
+          <di:waypoint x="2185.0" y="300.0" />
+          <di:waypoint x="2160.0" y="300.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2136.7" y="176.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c12_di" bpmnElement="Flow_c12">
+          <di:waypoint x="2240.0" y="339.0" />
+          <di:waypoint x="2280.0" y="339.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s1_di" bpmnElement="Flow_s1">
+          <di:waypoint x="560.0" y="599.0" />
+          <di:waypoint x="600.0" y="599.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s2_di" bpmnElement="Flow_s2">
+          <di:waypoint x="760.0" y="599.0" />
+          <di:waypoint x="800.0" y="599.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s3_di" bpmnElement="Flow_s3">
+          <di:waypoint x="960.0" y="599.0" />
+          <di:waypoint x="1000.0" y="599.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s_yes_di" bpmnElement="Flow_s_yes">
+          <di:waypoint x="1050.0" y="599.0" />
+          <di:waypoint x="1090.0" y="599.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1030.0" y="581.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s4_di" bpmnElement="Flow_s4">
+          <di:waypoint x="1250.0" y="599.0" />
+          <di:waypoint x="1290.0" y="599.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s5_di" bpmnElement="Flow_s5">
+          <di:waypoint x="1450.0" y="599.0" />
+          <di:waypoint x="1490.0" y="599.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s_shift_no_di" bpmnElement="Flow_s_shift_no">
+          <di:waypoint x="1540.0" y="599.0" />
+          <di:waypoint x="1580.0" y="599.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1520.0" y="581.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s6_di" bpmnElement="Flow_s6">
+          <di:waypoint x="1740.0" y="599.0" />
+          <di:waypoint x="1780.0" y="599.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s_plan_no_di" bpmnElement="Flow_s_plan_no">
+          <di:waypoint x="1025.0" y="624.0" />
+          <di:waypoint x="1025.0" y="730.0" />
+          <di:waypoint x="1000.0" y="730.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="976.7" y="606.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s7_di" bpmnElement="Flow_s7">
+          <di:waypoint x="920.0" y="769.0" />
+          <di:waypoint x="880.0" y="769.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s_loop_di" bpmnElement="Flow_s_loop">
+          <di:waypoint x="800.0" y="730.0" />
+          <di:waypoint x="800.0" y="638.0" />
+          <di:waypoint x="880.0" y="638.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="754.7" y="620.0" width="144.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s_shift_yes_di" bpmnElement="Flow_s_shift_yes">
+          <di:waypoint x="1515.0" y="624.0" />
+          <di:waypoint x="1515.0" y="744.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1475.0" y="606.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s_inst_no_di" bpmnElement="Flow_s_inst_no">
+          <di:waypoint x="1490.0" y="769.0" />
+          <di:waypoint x="1450.0" y="769.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1430.0" y="751.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s_loop_date_di" bpmnElement="Flow_s_loop_date">
+          <di:waypoint x="1290.0" y="769.0" />
+          <di:waypoint x="700.0" y="769.0" />
+          <di:waypoint x="700.0" y="648.0" />
+          <di:waypoint x="880.0" y="648.0" />
+          <di:waypoint x="880.0" y="638.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="810.0" y="620.0" width="160.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s_inst_yes_di" bpmnElement="Flow_s_inst_yes">
+          <di:waypoint x="1540.0" y="769.0" />
+          <di:waypoint x="1580.0" y="769.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1520.0" y="751.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s8_di" bpmnElement="Flow_s8">
+          <di:waypoint x="1740.0" y="769.0" />
+          <di:waypoint x="1780.0" y="769.0" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

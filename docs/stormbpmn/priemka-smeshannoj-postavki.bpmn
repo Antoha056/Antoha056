@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_PriemkaHimii"
+                  name="Приёмка смешанной поставки бытовой химии"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="StormBPMN compatible"
+                  exporterVersion="1.0">
+  <bpmn:category id="Category_1">
+    <bpmn:categoryValue id="CategoryValue_Scan" value="Скан классифицирует единицу"/>
+    <bpmn:categoryValue id="CategoryValue_Docs" value="Накладные всегда однородные"/>
+  </bpmn:category>
+  <bpmn:process id="Process_PriemkaHimii" name="Приёмка смешанной поставки" isExecutable="false">
+    <bpmn:documentation>Один артикул не бывает маркированным и немаркированным сразу. Скан Data Matrix кладёт единицу на артикул-М, отсутствие кода и дата до контрольной — на артикул-остаток. Смешанная поставка (3 канистры с КИЗ и 2 без) режется на две однородные накладные. Маркированный приход закрывается УПД ЭДО в ОСУ (GTIN + количество). Законный остаток в Честный знак не передаётся.</bpmn:documentation>
+    <bpmn:group id="Group_Scan" categoryValueRef="CategoryValue_Scan"/>
+    <bpmn:group id="Group_Docs" categoryValueRef="CategoryValue_Docs"/>
+    <bpmn:startEvent id="StartEvent_1" name="Старт" />
+    <bpmn:userTask id="Task_Open" name="Открыть поставку поставщика" />
+    <bpmn:userTask id="Task_Scan" name="Отсканировать каждую единицу 2D" />
+    <bpmn:exclusiveGateway id="Gateway_DM" name="На упаковке Data Matrix?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_ToMarked" name="В буфер артикула-М" />
+    <bpmn:exclusiveGateway id="Gateway_Date" name="Дата производства до контрольной?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_ToUnmarked" name="В буфер артикула-остатка" />
+    <bpmn:userTask id="Task_Quarantine" name="Карантин, возврат поставщику" />
+    <bpmn:endEvent id="EndEvent_Quarantine" name="Поставка отклонена" />
+    <bpmn:exclusiveGateway id="Gateway_More" name="Есть ещё единицы?" gatewayDirection="Converging" />
+    <bpmn:exclusiveGateway id="Gateway_Mix" name="В поставке оба статуса?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_InvM" name="Одна накладная: только маркированный" />
+    <bpmn:serviceTask id="Task_InvU" name="Одна накладная: только остаток" />
+    <bpmn:serviceTask id="Task_Inv2" name="Две однородные накладные" />
+    <bpmn:userTask id="Task_UTD" name="Подписать УПД ЭДО GTIN + количество" />
+    <bpmn:userTask id="Task_Plain" name="Принять остаток без Честного знака" />
+    <bpmn:userTask id="Task_UTD2" name="Подписать УПД ЭДО по маркированным" />
+    <bpmn:userTask id="Task_Plain2" name="Принять остаток отдельной накладной" />
+    <bpmn:endEvent id="EndEvent_Ok" name="Приёмка закрыта" />
+    <bpmn:sequenceFlow id="Flow_s1" sourceRef="StartEvent_1" targetRef="Task_Open" />
+    <bpmn:sequenceFlow id="Flow_s2" sourceRef="Task_Open" targetRef="Task_Scan" />
+    <bpmn:sequenceFlow id="Flow_s3" sourceRef="Task_Scan" targetRef="Gateway_DM" />
+    <bpmn:sequenceFlow id="Flow_dm_yes" sourceRef="Gateway_DM" targetRef="Task_ToMarked" name="Да, КИЗ" />
+    <bpmn:sequenceFlow id="Flow_dm_no" sourceRef="Gateway_DM" targetRef="Gateway_Date" name="Нет кода" />
+    <bpmn:sequenceFlow id="Flow_date_yes" sourceRef="Gateway_Date" targetRef="Task_ToUnmarked" name="Да, остаток" />
+    <bpmn:sequenceFlow id="Flow_date_no" sourceRef="Gateway_Date" targetRef="Task_Quarantine" name="Нет, после даты" />
+    <bpmn:sequenceFlow id="Flow_q1" sourceRef="Task_Quarantine" targetRef="EndEvent_Quarantine" />
+    <bpmn:sequenceFlow id="Flow_m_more" sourceRef="Task_ToMarked" targetRef="Gateway_More" />
+    <bpmn:sequenceFlow id="Flow_u_more" sourceRef="Task_ToUnmarked" targetRef="Gateway_More" />
+    <bpmn:sequenceFlow id="Flow_loop" sourceRef="Gateway_More" targetRef="Task_Scan" name="Да" />
+    <bpmn:sequenceFlow id="Flow_no_more" sourceRef="Gateway_More" targetRef="Gateway_Mix" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_only_m" sourceRef="Gateway_Mix" targetRef="Task_InvM" name="Только маркированный" />
+    <bpmn:sequenceFlow id="Flow_only_u" sourceRef="Gateway_Mix" targetRef="Task_InvU" name="Только остаток" />
+    <bpmn:sequenceFlow id="Flow_both" sourceRef="Gateway_Mix" targetRef="Task_Inv2" name="Оба, как 5 канистр" />
+    <bpmn:sequenceFlow id="Flow_utm" sourceRef="Task_InvM" targetRef="Task_UTD" />
+    <bpmn:sequenceFlow id="Flow_upu" sourceRef="Task_InvU" targetRef="Task_Plain" />
+    <bpmn:sequenceFlow id="Flow_u2" sourceRef="Task_Inv2" targetRef="Task_UTD2" />
+    <bpmn:sequenceFlow id="Flow_p2" sourceRef="Task_UTD2" targetRef="Task_Plain2" />
+    <bpmn:sequenceFlow id="Flow_end_m" sourceRef="Task_UTD" targetRef="EndEvent_Ok" />
+    <bpmn:sequenceFlow id="Flow_end_u" sourceRef="Task_Plain" targetRef="EndEvent_Ok" />
+    <bpmn:sequenceFlow id="Flow_end_2" sourceRef="Task_Plain2" targetRef="EndEvent_Ok" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Приёмка смешанной поставки бытовой химии">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_PriemkaHimii">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="40.0" y="281.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Open_di" bpmnElement="Task_Open">
+        <dc:Bounds x="140.0" y="260.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Scan_di" bpmnElement="Task_Scan">
+        <dc:Bounds x="340.0" y="260.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_DM_di" bpmnElement="Gateway_DM" isMarkerVisible="true">
+        <dc:Bounds x="540.0" y="274.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ToMarked_di" bpmnElement="Task_ToMarked">
+        <dc:Bounds x="640.0" y="80.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Date_di" bpmnElement="Gateway_Date" isMarkerVisible="true">
+        <dc:Bounds x="640.0" y="454.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ToUnmarked_di" bpmnElement="Task_ToUnmarked">
+        <dc:Bounds x="820.0" y="440.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Quarantine_di" bpmnElement="Task_Quarantine">
+        <dc:Bounds x="820.0" y="620.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Quarantine_di" bpmnElement="EndEvent_Quarantine">
+        <dc:Bounds x="1040.0" y="641.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_More_di" bpmnElement="Gateway_More" isMarkerVisible="true">
+        <dc:Bounds x="1080.0" y="274.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Mix_di" bpmnElement="Gateway_Mix" isMarkerVisible="true">
+        <dc:Bounds x="1280.0" y="274.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InvM_di" bpmnElement="Task_InvM">
+        <dc:Bounds x="1440.0" y="80.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InvU_di" bpmnElement="Task_InvU">
+        <dc:Bounds x="1440.0" y="260.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Inv2_di" bpmnElement="Task_Inv2">
+        <dc:Bounds x="1440.0" y="440.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_UTD_di" bpmnElement="Task_UTD">
+        <dc:Bounds x="1660.0" y="80.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Plain_di" bpmnElement="Task_Plain">
+        <dc:Bounds x="1660.0" y="260.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_UTD2_di" bpmnElement="Task_UTD2">
+        <dc:Bounds x="1660.0" y="440.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Plain2_di" bpmnElement="Task_Plain2">
+        <dc:Bounds x="1880.0" y="440.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Ok_di" bpmnElement="EndEvent_Ok">
+        <dc:Bounds x="2140.0" y="281.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Group_Scan_di" bpmnElement="Group_Scan">
+        <dc:Bounds x="120.0" y="50.0" width="1120.0" height="560.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Group_Docs_di" bpmnElement="Group_Docs">
+        <dc:Bounds x="1400.0" y="50.0" width="700.0" height="560.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_s1_di" bpmnElement="Flow_s1">
+          <di:waypoint x="76.0" y="299.0" />
+          <di:waypoint x="140.0" y="299.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s2_di" bpmnElement="Flow_s2">
+          <di:waypoint x="300.0" y="299.0" />
+          <di:waypoint x="340.0" y="299.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s3_di" bpmnElement="Flow_s3">
+          <di:waypoint x="500.0" y="299.0" />
+          <di:waypoint x="540.0" y="299.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_dm_yes_di" bpmnElement="Flow_dm_yes">
+          <di:waypoint x="590.0" y="299.0" />
+          <di:waypoint x="614.0" y="299.0" />
+          <di:waypoint x="614.0" y="119.0" />
+          <di:waypoint x="640.0" y="119.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="578.5" y="101.0" width="72.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_dm_no_di" bpmnElement="Flow_dm_no">
+          <di:waypoint x="565.0" y="324.0" />
+          <di:waypoint x="665.0" y="454.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="575.0" y="306.0" width="80.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_date_yes_di" bpmnElement="Flow_date_yes">
+          <di:waypoint x="690.0" y="479.0" />
+          <di:waypoint x="820.0" y="479.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="703.0" y="461.0" width="104.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_date_no_di" bpmnElement="Flow_date_no">
+          <di:waypoint x="665.0" y="504.0" />
+          <di:waypoint x="900.0" y="620.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="714.5" y="486.0" width="136.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_q1_di" bpmnElement="Flow_q1">
+          <di:waypoint x="980.0" y="659.0" />
+          <di:waypoint x="1040.0" y="659.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_m_more_di" bpmnElement="Flow_m_more">
+          <di:waypoint x="800.0" y="119.0" />
+          <di:waypoint x="1105.0" y="119.0" />
+          <di:waypoint x="1105.0" y="274.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_u_more_di" bpmnElement="Flow_u_more">
+          <di:waypoint x="980.0" y="479.0" />
+          <di:waypoint x="1105.0" y="479.0" />
+          <di:waypoint x="1105.0" y="324.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_loop_di" bpmnElement="Flow_loop">
+          <di:waypoint x="1105.0" y="274.0" />
+          <di:waypoint x="1105.0" y="222.0" />
+          <di:waypoint x="420.0" y="208.0" />
+          <di:waypoint x="420.0" y="260.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="727.5" y="190.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_no_more_di" bpmnElement="Flow_no_more">
+          <di:waypoint x="1130.0" y="299.0" />
+          <di:waypoint x="1280.0" y="299.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1170.0" y="281.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_only_m_di" bpmnElement="Flow_only_m">
+          <di:waypoint x="1330.0" y="299.0" />
+          <di:waypoint x="1358.0" y="299.0" />
+          <di:waypoint x="1358.0" y="119.0" />
+          <di:waypoint x="1440.0" y="119.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1283.5" y="101.0" width="176.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_only_u_di" bpmnElement="Flow_only_u">
+          <di:waypoint x="1330.0" y="299.0" />
+          <di:waypoint x="1440.0" y="299.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1321.0" y="281.0" width="128.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_both_di" bpmnElement="Flow_both">
+          <di:waypoint x="1305.0" y="324.0" />
+          <di:waypoint x="1305.0" y="479.0" />
+          <di:waypoint x="1440.0" y="479.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1270.0" y="306.0" width="160.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_utm_di" bpmnElement="Flow_utm">
+          <di:waypoint x="1600.0" y="119.0" />
+          <di:waypoint x="1660.0" y="119.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_upu_di" bpmnElement="Flow_upu">
+          <di:waypoint x="1600.0" y="299.0" />
+          <di:waypoint x="1660.0" y="299.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_u2_di" bpmnElement="Flow_u2">
+          <di:waypoint x="1600.0" y="479.0" />
+          <di:waypoint x="1660.0" y="479.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_p2_di" bpmnElement="Flow_p2">
+          <di:waypoint x="1820.0" y="479.0" />
+          <di:waypoint x="1880.0" y="479.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_end_m_di" bpmnElement="Flow_end_m">
+          <di:waypoint x="1820.0" y="119.0" />
+          <di:waypoint x="2158.0" y="119.0" />
+          <di:waypoint x="2158.0" y="281.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_end_u_di" bpmnElement="Flow_end_u">
+          <di:waypoint x="1820.0" y="299.0" />
+          <di:waypoint x="2140.0" y="299.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_end_2_di" bpmnElement="Flow_end_2">
+          <di:waypoint x="2040.0" y="479.0" />
+          <di:waypoint x="2158.0" y="479.0" />
+          <di:waypoint x="2158.0" y="317.0" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

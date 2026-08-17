@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 720" width="1680" height="720">
+<rect width="1680" height="720" fill="#f7f8fa"/>
+<text x="840.0" y="36" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700">Три этапа маркировки: ТН ВЭД и ОКПД 2</text>
+<rect x="40" y="70" width="520" height="600" rx="12" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="64" y="106" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#1e40af">Этап 1  ·  с 01.05.2025</text>
+<text x="64" y="134" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#111827">Мыло, моющие средства, бытовая химия</text>
+<text x="64" y="166" font-family="Arial, sans-serif" font-size="12" fill="#374151">ТН ВЭД: 3401; 3402 50 000 0; 3405 40 000 0</text>
+<text x="64" y="186" font-family="Arial, sans-serif" font-size="12" fill="#374151">ОКПД 2: 20.41.3; 20.41.44; 20.42.19</text>
+<text x="64" y="220" font-family="Arial, sans-serif" font-size="12" font-style="italic" fill="#4b5563">Остаток без КИЗ — если произведён или ввезён до 01.05.2025</text>
+<text x="64" y="260" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">3401 — мыло</text>
+<text x="64" y="288" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">3402 50 000 0 — моющие для розницы</text>
+<text x="64" y="316" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">3405 40 000 0 — чистящие пасты и порошки</text>
+<text x="64" y="344" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">20.41.3 — мыло, моющие, чистящие</text>
+<text x="64" y="372" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">20.41.44 — пасты и порошки чистящие</text>
+<text x="64" y="400" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">20.42.19 — прочая продукция (вместе с ТН ВЭД этапа 1)</text>
+<rect x="584" y="70" width="520" height="600" rx="12" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="608" y="106" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#9a3412">Этап 2  ·  с 01.07.2025</text>
+<text x="608" y="134" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#111827">Волосы, бритьё, дезодоранты, ароматизаторы</text>
+<text x="608" y="166" font-family="Arial, sans-serif" font-size="12" fill="#374151">ТН ВЭД: 3305; 3307 (кроме 3307 41 000 0, 3307 90 000 1/2)</text>
+<text x="608" y="186" font-family="Arial, sans-serif" font-size="12" fill="#374151">ОКПД 2: 20.41.41; 20.42.16; 20.42.17; 20.42.19</text>
+<text x="608" y="220" font-family="Arial, sans-serif" font-size="12" font-style="italic" fill="#4b5563">Остаток без КИЗ — если произведён или ввезён до 01.07.2025</text>
+<text x="608" y="260" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">3305 — средства для волос</text>
+<text x="608" y="288" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">3307 — бритьё, дезодоранты, ванны</text>
+<text x="608" y="316" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">кроме благовоний и растворов для линз</text>
+<text x="608" y="344" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">20.41.41 — ароматизаторы воздуха</text>
+<text x="608" y="372" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">20.42.16 / 20.42.17 — шампуни и уход для волос</text>
+<text x="608" y="400" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">20.42.19 — с ТН ВЭД этапа 2 даёт дату 01.07.2025</text>
+<rect x="1128" y="70" width="520" height="600" rx="12" fill="#eefaf3" stroke="#15803d" stroke-width="2"/>
+<text x="1152" y="106" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#166534">Этап 3  ·  с 01.10.2025</text>
+<text x="1152" y="134" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#111827">Косметика, декоративка, полость рта</text>
+<text x="1152" y="166" font-family="Arial, sans-serif" font-size="12" fill="#374151">ТН ВЭД: 3304; 3306 (кроме 3306 20 000 0)</text>
+<text x="1152" y="186" font-family="Arial, sans-serif" font-size="12" fill="#374151">ОКПД 2: 20.42.12–15, 20.42.18 (с исключениями)</text>
+<text x="1152" y="220" font-family="Arial, sans-serif" font-size="12" font-style="italic" fill="#4b5563">Остаток без КИЗ — если произведён или ввезён до 01.10.2025</text>
+<text x="1152" y="260" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">3304 — косметика и уход за кожей</text>
+<text x="1152" y="288" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">3306 — полость рта и зубы, кроме зубной нити</text>
+<text x="1152" y="316" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">кроме антимикробной гигиены рук 3304 99 000 0</text>
+<text x="1152" y="344" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">20.42.12 / .13 — макияж губ, глаз, маникюр</text>
+<text x="1152" y="372" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">20.42.14 / .15 — пудра и уход за кожей</text>
+<text x="1152" y="400" font-family="Arial, sans-serif" font-size="13" fill="#1f2937">20.42.18 — зубные пасты, кроме нитей .130</text>
+<text x="40" y="692" font-family="Arial, sans-serif" font-size="13" fill="#4b5568">Маркируется только пара кодов. Если ТН ВЭД и ОКПД 2 из разных волн — дата та, когда они пересекутся. 20.42.19 входит в этапы 1 и 2. С 01.07.2026 касса для всех этапов общая.</text>
+</svg>

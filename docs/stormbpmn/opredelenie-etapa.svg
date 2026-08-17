@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 620" width="1600" height="620">
+<rect width="1600" height="620" fill="#f7f8fa"/>
+<text x="800.0" y="36" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700">Определение этапа маркировки по ТН ВЭД и ОКПД 2</text>
+<defs><marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#4a5568"/></marker></defs>
+<rect x="120" y="30" width="860" height="520" rx="8" fill="#eef6ff" stroke="#5b8def" stroke-dasharray="6 4"/>
+<text x="140" y="52" font-family="Arial, sans-serif" font-size="13" fill="#2b5cb8" font-weight="700">Сначала коды, потом дата. Название товара не используется</text>
+<rect x="1120" y="30" width="320" height="460" rx="8" fill="#eefaf3" stroke="#3ca06a" stroke-dasharray="6 4"/>
+<text x="1140" y="52" font-family="Arial, sans-serif" font-size="13" fill="#237a4b" font-weight="700">Двойники с датой этапа</text>
+<path d="M 76.0,259.0 L 140.0,259.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 300.0,259.0 L 340.0,259.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 390.0,259.0 L 500.0,259.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="445.0" y="251.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Нет</text>
+<path d="M 365.0,284.0 L 365.0,469.0 L 500.0,469.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="410.0" y="276.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Да</text>
+<path d="M 660.0,259.0 L 700.0,259.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 750.0,259.0 L 820.0,259.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="785.0" y="251.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Да</text>
+<path d="M 725.0,284.0 L 725.0,469.0 L 820.0,469.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="756.7" y="276.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Нет</text>
+<path d="M 660.0,469.0 L 1040.0,469.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 980.0,469.0 L 1040.0,469.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 980.0,259.0 L 1020.0,259.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 1070.0,259.0 L 1094.0,259.0 L 1094.0,99.0 L 1140.0,99.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1099.5" y="91.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">01.05.2025</text>
+<path d="M 1070.0,259.0 L 1140.0,259.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1105.0" y="251.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">01.07.2025</text>
+<path d="M 1070.0,259.0 L 1094.0,259.0 L 1094.0,419.0 L 1140.0,419.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1099.5" y="251.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">01.10.2025</text>
+<path d="M 1300.0,99.0 L 1398.0,99.0 L 1398.0,241.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 1300.0,259.0 L 1380.0,259.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 1300.0,419.0 L 1398.0,419.0 L 1398.0,277.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="58.0" cy="259.0" r="18" fill="#d1fae5" stroke="#059669" stroke-width="3"/>
+<text x="58.0" y="289.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Старт</text>
+<rect x="140" y="220" width="160" height="78" rx="10" fill="#fef3c7" stroke="#b45309" stroke-width="1.8"/>
+<text x="220.0" y="252.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Взять ТН ВЭД и</text>
+<text x="220.0" y="265.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">ОКПД 2 с карточки</text>
+<polygon points="365.0,234.0 390.0,259.0 365.0,284.0 340.0,259.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="365.0" y="259.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="365.0" y="218.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Код в исключениях?</text>
+<rect x="500" y="220" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="580.0" y="252.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Найти этапы</text>
+<text x="580.0" y="265.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">каждого кода</text>
+<rect x="500" y="430" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="580.0" y="462.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Не маркируется,</text>
+<text x="580.0" y="475.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">двойник не нужен</text>
+<polygon points="725.0,234.0 750.0,259.0 725.0,284.0 700.0,259.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="725.0" y="259.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="725.0" y="212.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Оба кода есть в</text>
+<text x="725.0" y="224.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">перечне?</text>
+<rect x="820" y="220" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="900.0" y="252.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Дата = поздняя из</text>
+<text x="900.0" y="265.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">двух дат этапов</text>
+<rect x="820" y="430" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="900.0" y="462.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Не маркируется,</text>
+<text x="900.0" y="475.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">двойник не нужен</text>
+<polygon points="1045.0,234.0 1070.0,259.0 1045.0,284.0 1020.0,259.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="1045.0" y="259.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="1045.0" y="212.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Какая контрольная</text>
+<text x="1045.0" y="224.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">дата?</text>
+<rect x="1140" y="60" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="1220.0" y="92.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Этап 1, двойники с</text>
+<text x="1220.0" y="105.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">датой 01.05.2025</text>
+<rect x="1140" y="220" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="1220.0" y="252.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Этап 2, двойники с</text>
+<text x="1220.0" y="265.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">датой 01.07.2025</text>
+<rect x="1140" y="380" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="1220.0" y="412.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Этап 3, двойники с</text>
+<text x="1220.0" y="425.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">датой 01.10.2025</text>
+<circle cx="1398.0" cy="259.0" r="18" fill="#fee2e2" stroke="#b91c1c" stroke-width="5"/>
+<text x="1398.0" y="291.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Пара создана</text>
+<circle cx="1058.0" cy="469.0" r="18" fill="#fee2e2" stroke="#b91c1c" stroke-width="5"/>
+<text x="1058.0" y="501.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Обычный артикул</text>
+<text x="40" y="602" font-family="Arial, sans-serif" font-size="12" fill="#4a5568">Если коды из разных волн — контрольная дата та, когда они пересекаются. С 01.07.2026 касса одинакова для всех трёх этапов.</text>
+</svg>

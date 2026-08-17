@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_EtapHimii"
+                  name="Определение этапа маркировки по ТН ВЭД и ОКПД 2"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="StormBPMN compatible"
+                  exporterVersion="1.0">
+  <bpmn:category id="Category_1">
+    <bpmn:categoryValue id="CategoryValue_Codes" value="Классификация по кодам"/>
+    <bpmn:categoryValue id="CategoryValue_Twin" value="Карточки-двойники этапа"/>
+  </bpmn:category>
+  <bpmn:process id="Process_EtapHimii" name="Определение этапа по ТН ВЭД и ОКПД 2" isExecutable="false">
+    <bpmn:documentation>Этап и контрольная дата считаются по паре ТН ВЭД + ОКПД 2, а не по названию товара. Нужны оба кода в перечне ПП РФ № 1681. Если коды из разных волн, берётся более поздняя дата. 20.42.19 входит в 1 и 2 этапы: дату даёт ТН ВЭД. Исключённые коды и товары вне перечня остаются обычным артикулом.</bpmn:documentation>
+    <bpmn:group id="Group_Codes" categoryValueRef="CategoryValue_Codes"/>
+    <bpmn:group id="Group_Twin" categoryValueRef="CategoryValue_Twin"/>
+    <bpmn:startEvent id="StartEvent_1" name="Старт" />
+    <bpmn:userTask id="Task_Read" name="Взять ТН ВЭД и ОКПД 2 с карточки" />
+    <bpmn:exclusiveGateway id="Gateway_Excl" name="Код в исключениях?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_Find" name="Найти этапы каждого кода" />
+    <bpmn:serviceTask id="Task_Skip" name="Не маркируется, двойник не нужен" />
+    <bpmn:exclusiveGateway id="Gateway_Both" name="Оба кода есть в перечне?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_Calc" name="Дата = поздняя из двух дат этапов" />
+    <bpmn:serviceTask id="Task_None" name="Не маркируется, двойник не нужен" />
+    <bpmn:exclusiveGateway id="Gateway_Date" name="Какая контрольная дата?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_S1" name="Этап 1, двойники с датой 01.05.2025" />
+    <bpmn:serviceTask id="Task_S2" name="Этап 2, двойники с датой 01.07.2025" />
+    <bpmn:serviceTask id="Task_S3" name="Этап 3, двойники с датой 01.10.2025" />
+    <bpmn:endEvent id="EndEvent_Ok" name="Пара создана" />
+    <bpmn:endEvent id="EndEvent_No" name="Обычный артикул" />
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_Read" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_Read" targetRef="Gateway_Excl" />
+    <bpmn:sequenceFlow id="Flow_ex_no" sourceRef="Gateway_Excl" targetRef="Task_Find" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_ex_yes" sourceRef="Gateway_Excl" targetRef="Task_Skip" name="Да" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_Find" targetRef="Gateway_Both" />
+    <bpmn:sequenceFlow id="Flow_both_yes" sourceRef="Gateway_Both" targetRef="Task_Calc" name="Да" />
+    <bpmn:sequenceFlow id="Flow_both_no" sourceRef="Gateway_Both" targetRef="Task_None" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_skip_end" sourceRef="Task_Skip" targetRef="EndEvent_No" />
+    <bpmn:sequenceFlow id="Flow_none_end" sourceRef="Task_None" targetRef="EndEvent_No" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_Calc" targetRef="Gateway_Date" />
+    <bpmn:sequenceFlow id="Flow_d1" sourceRef="Gateway_Date" targetRef="Task_S1" name="01.05.2025" />
+    <bpmn:sequenceFlow id="Flow_d2" sourceRef="Gateway_Date" targetRef="Task_S2" name="01.07.2025" />
+    <bpmn:sequenceFlow id="Flow_d3" sourceRef="Gateway_Date" targetRef="Task_S3" name="01.10.2025" />
+    <bpmn:sequenceFlow id="Flow_e1" sourceRef="Task_S1" targetRef="EndEvent_Ok" />
+    <bpmn:sequenceFlow id="Flow_e2" sourceRef="Task_S2" targetRef="EndEvent_Ok" />
+    <bpmn:sequenceFlow id="Flow_e3" sourceRef="Task_S3" targetRef="EndEvent_Ok" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Определение этапа маркировки по ТН ВЭД и ОКПД 2">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_EtapHimii">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="40.0" y="241.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Read_di" bpmnElement="Task_Read">
+        <dc:Bounds x="140.0" y="220.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Excl_di" bpmnElement="Gateway_Excl" isMarkerVisible="true">
+        <dc:Bounds x="340.0" y="234.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Find_di" bpmnElement="Task_Find">
+        <dc:Bounds x="500.0" y="220.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Skip_di" bpmnElement="Task_Skip">
+        <dc:Bounds x="500.0" y="430.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Both_di" bpmnElement="Gateway_Both" isMarkerVisible="true">
+        <dc:Bounds x="700.0" y="234.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Calc_di" bpmnElement="Task_Calc">
+        <dc:Bounds x="820.0" y="220.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_None_di" bpmnElement="Task_None">
+        <dc:Bounds x="820.0" y="430.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Date_di" bpmnElement="Gateway_Date" isMarkerVisible="true">
+        <dc:Bounds x="1020.0" y="234.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_S1_di" bpmnElement="Task_S1">
+        <dc:Bounds x="1140.0" y="60.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_S2_di" bpmnElement="Task_S2">
+        <dc:Bounds x="1140.0" y="220.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_S3_di" bpmnElement="Task_S3">
+        <dc:Bounds x="1140.0" y="380.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Ok_di" bpmnElement="EndEvent_Ok">
+        <dc:Bounds x="1380.0" y="241.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_No_di" bpmnElement="EndEvent_No">
+        <dc:Bounds x="1040.0" y="451.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Group_Codes_di" bpmnElement="Group_Codes">
+        <dc:Bounds x="120.0" y="30.0" width="860.0" height="520.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Group_Twin_di" bpmnElement="Group_Twin">
+        <dc:Bounds x="1120.0" y="30.0" width="320.0" height="460.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+          <di:waypoint x="76.0" y="259.0" />
+          <di:waypoint x="140.0" y="259.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+          <di:waypoint x="300.0" y="259.0" />
+          <di:waypoint x="340.0" y="259.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ex_no_di" bpmnElement="Flow_ex_no">
+          <di:waypoint x="390.0" y="259.0" />
+          <di:waypoint x="500.0" y="259.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="410.0" y="241.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ex_yes_di" bpmnElement="Flow_ex_yes">
+          <di:waypoint x="365.0" y="284.0" />
+          <di:waypoint x="365.0" y="469.0" />
+          <di:waypoint x="500.0" y="469.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="375.0" y="266.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+          <di:waypoint x="660.0" y="259.0" />
+          <di:waypoint x="700.0" y="259.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_both_yes_di" bpmnElement="Flow_both_yes">
+          <di:waypoint x="750.0" y="259.0" />
+          <di:waypoint x="820.0" y="259.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="750.0" y="241.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_both_no_di" bpmnElement="Flow_both_no">
+          <di:waypoint x="725.0" y="284.0" />
+          <di:waypoint x="725.0" y="469.0" />
+          <di:waypoint x="820.0" y="469.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="721.7" y="266.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_skip_end_di" bpmnElement="Flow_skip_end">
+          <di:waypoint x="660.0" y="469.0" />
+          <di:waypoint x="1040.0" y="469.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_none_end_di" bpmnElement="Flow_none_end">
+          <di:waypoint x="980.0" y="469.0" />
+          <di:waypoint x="1040.0" y="469.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+          <di:waypoint x="980.0" y="259.0" />
+          <di:waypoint x="1020.0" y="259.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_d1_di" bpmnElement="Flow_d1">
+          <di:waypoint x="1070.0" y="259.0" />
+          <di:waypoint x="1094.0" y="259.0" />
+          <di:waypoint x="1094.0" y="99.0" />
+          <di:waypoint x="1140.0" y="99.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1051.5" y="81.0" width="96.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_d2_di" bpmnElement="Flow_d2">
+          <di:waypoint x="1070.0" y="259.0" />
+          <di:waypoint x="1140.0" y="259.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1057.0" y="241.0" width="96.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_d3_di" bpmnElement="Flow_d3">
+          <di:waypoint x="1070.0" y="259.0" />
+          <di:waypoint x="1094.0" y="259.0" />
+          <di:waypoint x="1094.0" y="419.0" />
+          <di:waypoint x="1140.0" y="419.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1051.5" y="241.0" width="96.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_e1_di" bpmnElement="Flow_e1">
+          <di:waypoint x="1300.0" y="99.0" />
+          <di:waypoint x="1398.0" y="99.0" />
+          <di:waypoint x="1398.0" y="241.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_e2_di" bpmnElement="Flow_e2">
+          <di:waypoint x="1300.0" y="259.0" />
+          <di:waypoint x="1380.0" y="259.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_e3_di" bpmnElement="Flow_e3">
+          <di:waypoint x="1300.0" y="419.0" />
+          <di:waypoint x="1398.0" y="419.0" />
+          <di:waypoint x="1398.0" y="277.0" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

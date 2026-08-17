@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1860 1120" width="1860" height="1120">
+<rect width="1860" height="1120" fill="#f7f8fa"/>
+<text x="930.0" y="36" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700">Сборка, продажа через кассу и списание на авто</text>
+<defs><marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#4a5568"/></marker></defs>
+<rect x="340" y="0" width="1380" height="280" rx="8" fill="#eef6ff" stroke="#5b8def" stroke-dasharray="6 4"/>
+<text x="360" y="22" font-family="Arial, sans-serif" font-size="13" fill="#2b5cb8" font-weight="700">Сборка заказа: сначала остаток без кода, FIFO по сроку</text>
+<rect x="340" y="330" width="1240" height="280" rx="8" fill="#fff7ed" stroke="#c2410c" stroke-dasharray="6 4"/>
+<text x="360" y="352" font-family="Arial, sans-serif" font-size="13" fill="#9a3412" font-weight="700">Касса: один чек может смешивать статусы, накладная — нет</text>
+<rect x="340" y="610" width="900" height="430" rx="8" fill="#eefaf3" stroke="#3ca06a" stroke-dasharray="6 4"/>
+<text x="360" y="632" font-family="Arial, sans-serif" font-size="13" fill="#237a4b" font-weight="700">СТО: продажа — товарный чек; расход в работу — списание</text>
+<path d="M 76.0,469.0 L 140.0,469.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 190.0,469.0 L 230.0,469.0 L 230.0,129.0 L 360.0,129.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="252.5" y="121.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Сборка</text>
+<path d="M 190.0,469.0 L 360.0,469.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="275.0" y="461.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Касса, нал и безнал</text>
+<path d="M 190.0,469.0 L 230.0,469.0 L 230.0,809.0 L 360.0,809.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="252.5" y="461.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Списание на авто</text>
+<path d="M 520.0,129.0 L 560.0,129.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 720.0,129.0 L 760.0,129.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 810.0,129.0 L 830.0,129.0 L 830.0,59.0 L 860.0,59.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="832.5" y="51.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Да</text>
+<path d="M 810.0,129.0 L 830.0,129.0 L 830.0,199.0 L 860.0,199.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="832.5" y="121.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Нет</text>
+<path d="M 1020.0,59.0 L 1105.0,59.0 L 1105.0,104.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 1020.0,199.0 L 1105.0,199.0 L 1105.0,154.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 1105.0,104.0 L 1105.0,68.0 L 640.0,54.0 L 640.0,90.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="872.5" y="46.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Да</text>
+<path d="M 1130.0,129.0 L 1240.0,129.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1185.0" y="121.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Нет</text>
+<path d="M 1290.0,129.0 L 1314.0,129.0 L 1314.0,59.0 L 1400.0,59.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1329.5" y="51.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Один статус</text>
+<path d="M 1290.0,129.0 L 1314.0,129.0 L 1314.0,199.0 L 1400.0,199.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="1329.5" y="121.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Оба статуса</text>
+<path d="M 1560.0,59.0 L 1658.0,59.0 L 1658.0,111.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 1560.0,199.0 L 1658.0,199.0 L 1658.0,147.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 520.0,469.0 L 560.0,469.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 610.0,469.0 L 630.0,469.0 L 630.0,399.0 L 660.0,399.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="632.5" y="391.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Да</text>
+<path d="M 610.0,469.0 L 630.0,469.0 L 630.0,539.0 L 660.0,539.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="632.5" y="461.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Нет</text>
+<path d="M 820.0,399.0 L 905.0,399.0 L 905.0,444.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 820.0,539.0 L 905.0,539.0 L 905.0,494.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 905.0,444.0 L 905.0,416.0 L 440.0,402.0 L 440.0,430.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="672.5" y="394.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Да</text>
+<path d="M 930.0,469.0 L 1040.0,469.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="985.0" y="461.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Нет</text>
+<path d="M 1200.0,469.0 L 1260.0,469.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 1420.0,469.0 L 1500.0,469.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 520.0,809.0 L 560.0,809.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 610.0,809.0 L 634.0,809.0 L 634.0,739.0 L 720.0,739.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="649.5" y="731.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Да, маркированный</text>
+<path d="M 610.0,809.0 L 634.0,809.0 L 634.0,879.0 L 720.0,879.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="649.5" y="801.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Нет, остаток</text>
+<path d="M 770.0,739.0 L 786.0,739.0 L 786.0,679.0 L 880.0,679.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="805.5" y="671.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Продажа</text>
+<path d="M 770.0,739.0 L 786.0,739.0 L 786.0,779.0 L 880.0,779.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="805.5" y="731.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Расход</text>
+<path d="M 770.0,879.0 L 786.0,879.0 L 786.0,879.0 L 880.0,879.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="805.5" y="871.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Продажа</text>
+<path d="M 770.0,879.0 L 880.0,979.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="825.0" y="871.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#1a365d">Расход</text>
+<path d="M 1040.0,679.0 L 1140.0,679.0 L 1140.0,809.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 1040.0,779.0 L 1140.0,779.0 L 1140.0,809.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 1040.0,879.0 L 1140.0,879.0 L 1140.0,809.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<path d="M 1040.0,979.0 L 1140.0,979.0 L 1140.0,809.0" fill="none" stroke="#4a5568" stroke-width="1.6" marker-end="url(#arrow)"/>
+<circle cx="58.0" cy="469.0" r="18" fill="#d1fae5" stroke="#059669" stroke-width="3"/>
+<text x="58.0" y="499.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Старт</text>
+<polygon points="165.0,444.0 190.0,469.0 165.0,494.0 140.0,469.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="165.0" y="469.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="165.0" y="428.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Какая операция?</text>
+<rect x="360" y="90" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="440.0" y="122.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Показать остатки</text>
+<text x="440.0" y="135.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">обоих двойников</text>
+<rect x="560" y="90" width="160" height="78" rx="10" fill="#fef3c7" stroke="#b45309" stroke-width="1.8"/>
+<text x="640.0" y="122.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Сканировать</text>
+<text x="640.0" y="135.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">единицу на сборке</text>
+<polygon points="785.0,104.0 810.0,129.0 785.0,154.0 760.0,129.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="785.0" y="129.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="785.0" y="88.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Data Matrix?</text>
+<rect x="860" y="20" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="940.0" y="46.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Строка артикула-М,</text>
+<text x="940.0" y="59.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">сначала остаток</text>
+<text x="940.0" y="72.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">FIFO</text>
+<rect x="860" y="160" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="940.0" y="192.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Строка</text>
+<text x="940.0" y="205.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">артикула-остатка</text>
+<polygon points="1105.0,104.0 1130.0,129.0 1105.0,154.0 1080.0,129.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="1105.0" y="129.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="1105.0" y="88.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Ещё единицы?</text>
+<polygon points="1265.0,104.0 1290.0,129.0 1265.0,154.0 1240.0,129.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="1265.0" y="129.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="1265.0" y="82.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">В сборке оба</text>
+<text x="1265.0" y="94.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">статуса?</text>
+<rect x="1400" y="20" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="1480.0" y="52.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Одна расходная</text>
+<text x="1480.0" y="65.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">накладная</text>
+<rect x="1400" y="160" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="1480.0" y="192.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Две однородные</text>
+<text x="1480.0" y="205.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">накладные</text>
+<circle cx="1658.0" cy="129.0" r="18" fill="#fee2e2" stroke="#b91c1c" stroke-width="5"/>
+<text x="1658.0" y="161.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Сборка закрыта</text>
+<rect x="360" y="430" width="160" height="78" rx="10" fill="#fef3c7" stroke="#b45309" stroke-width="1.8"/>
+<text x="440.0" y="462.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Сканировать товар</text>
+<text x="440.0" y="475.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">на кассе</text>
+<polygon points="585.0,444.0 610.0,469.0 585.0,494.0 560.0,469.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="585.0" y="469.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="585.0" y="428.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Data Matrix?</text>
+<rect x="660" y="360" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="740.0" y="399.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Строка с КИЗ в чек</text>
+<rect x="660" y="500" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="740.0" y="532.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Строка остатка без</text>
+<text x="740.0" y="545.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">КИЗ</text>
+<polygon points="905.0,444.0 930.0,469.0 905.0,494.0 880.0,469.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="905.0" y="469.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="905.0" y="428.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Ещё товары?</text>
+<rect x="1040" y="430" width="160" height="78" rx="10" fill="#fef3c7" stroke="#b45309" stroke-width="1.8"/>
+<text x="1120.0" y="462.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Один чек: нал или</text>
+<text x="1120.0" y="475.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">безнал</text>
+<rect x="1260" y="430" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="1340.0" y="462.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Чек режется на 1–2</text>
+<text x="1340.0" y="475.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">складских движения</text>
+<circle cx="1518.0" cy="469.0" r="18" fill="#fee2e2" stroke="#b91c1c" stroke-width="5"/>
+<text x="1518.0" y="495.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Продажа через</text>
+<text x="1518.0" y="507.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">кассу</text>
+<rect x="360" y="770" width="160" height="78" rx="10" fill="#fef3c7" stroke="#b45309" stroke-width="1.8"/>
+<text x="440.0" y="802.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Сканировать</text>
+<text x="440.0" y="815.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">единицу под авто</text>
+<polygon points="585.0,784.0 610.0,809.0 585.0,834.0 560.0,809.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="585.0" y="809.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="585.0" y="768.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Data Matrix?</text>
+<polygon points="745.0,714.0 770.0,739.0 745.0,764.0 720.0,739.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="745.0" y="739.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="745.0" y="692.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Продажа или расход</text>
+<text x="745.0" y="704.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">в работу?</text>
+<polygon points="745.0,854.0 770.0,879.0 745.0,904.0 720.0,879.0" fill="#fff7ed" stroke="#c2410c" stroke-width="2"/>
+<text x="745.0" y="879.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" fill="#9a3412">×</text>
+<text x="745.0" y="832.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Продажа или расход</text>
+<text x="745.0" y="844.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">в работу?</text>
+<rect x="880" y="640" width="160" height="78" rx="10" fill="#fef3c7" stroke="#b45309" stroke-width="1.8"/>
+<text x="960.0" y="679.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Товарный чек с КИЗ</text>
+<rect x="880" y="740" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="960.0" y="772.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Списание + вывод в</text>
+<text x="960.0" y="785.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">ЧЗ ОСУ</text>
+<rect x="880" y="840" width="160" height="78" rx="10" fill="#fef3c7" stroke="#b45309" stroke-width="1.8"/>
+<text x="960.0" y="872.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Товарный чек без</text>
+<text x="960.0" y="885.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">КИЗ</text>
+<rect x="880" y="940" width="160" height="78" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.8"/>
+<text x="960.0" y="972.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">Только складское</text>
+<text x="960.0" y="985.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="11">списание</text>
+<circle cx="1158.0" cy="809.0" r="18" fill="#fee2e2" stroke="#b91c1c" stroke-width="5"/>
+<text x="1158.0" y="835.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">Операция на авто</text>
+<text x="1158.0" y="847.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10">закрыта</text>
+<text x="40" y="1102" font-family="Arial, sans-serif" font-size="12" fill="#4a5568">Синие задачи — система. Жёлтые — сотрудник. С 01.07.2026 маркированный товар выводится через кассу или отдельным выводом в ЧЗ.</text>
+</svg>

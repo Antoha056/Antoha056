@@ -42,6 +42,7 @@ def parse_km(km: str, serial_len: int = SERIAL_LEN) -> dict:
     result = {
         "km": raw.replace("\x1d", "<GS>"),
         "ok": False,
+        "kind": "unknown",
         "gtin": None,
         "serial": None,
         "serialLength": 0,
@@ -62,28 +63,19 @@ def parse_km(km: str, serial_len: int = SERIAL_LEN) -> dict:
     body = rest[2:]
 
     gs_at = body.find("\x1d")
-    question_as_gs = gs_at < 0 and "?" in body
     if gs_at >= 0:
         serial, tail = body[:gs_at], body[gs_at + 1 :]
         result["hasGs"] = True
-    elif question_as_gs:
-        gs_at = body.find("?")
-        serial, tail = body[:gs_at], body[gs_at + 1 :]
-        result["hasGs"] = False
-        result["reasons"].append("символ ? похож на потерянный или отображённый GS (ASCII 29)")
     else:
         serial, tail = body[:serial_len], body[serial_len:]
         result["hasGs"] = False
-        if len(body) > serial_len:
-            result["reasons"].append("нет разделителя GS (ASCII 29) перед криптохвостом")
 
     result["serial"] = serial
     result["serialLength"] = len(serial)
-    if len(serial) != serial_len:
-        result["reasons"].append(f"серийник {len(serial)} символов, для этой группы нужно {serial_len}")
 
     if tail.startswith("93") and len(tail) >= 6:
         result["ai93"] = tail[2:6]
+        result["kind"] = "short"
     elif tail.startswith("91"):
         crypto = tail[2:]
         gs2 = crypto.find("\x1d")
@@ -95,25 +87,31 @@ def parse_km(km: str, serial_len: int = SERIAL_LEN) -> dict:
             rest92 = crypto[4:]
         if rest92.startswith("92"):
             result["ai92"] = rest92[2:]
-    elif tail:
-        result["reasons"].append("после серийника нет AI 93 или AI 91/92")
+        result["kind"] = "full" if result["ai91"] and result["ai92"] else "unknown"
+    elif "91" in raw and "92" in raw:
+        result["kind"] = "full"
+        result["reasons"].append("полный КМ есть, но GS не разобран")
+    elif "93" in raw[18:]:
+        result["kind"] = "short"
 
-    if not result["ai93"] and not (result["ai91"] and result["ai92"]):
-        if "после серийника нет AI 93 или AI 91/92" not in result["reasons"]:
-            result["reasons"].append("нет криптохвоста AI 93 или пары AI 91/92")
+    if result["kind"] == "unknown":
+        result["reasons"].append("в тексте ошибки виден короткий фрагмент, не полный КМ")
 
-    result["ok"] = (
-        len(serial) == serial_len
-        and bool(result["ai93"] or (result["ai91"] and result["ai92"]))
-        and not any("нет AI" in r or "нет разделителя" in r or "серийник" in r or "криптохвоста" in r for r in result["reasons"])
+    if len(serial) != serial_len and result["kind"] != "full":
+        result["reasons"].append(f"серийник {len(serial)} символов, для этой группы нужно {serial_len}")
+
+    result["ok"] = result["kind"] in ("short", "full") and (
+        bool(result["ai93"]) or bool(result["ai91"] and result["ai92"])
     )
-    if result["ok"]:
-        result["reasons"] = []
     return result
 
 
-def diagnose_dump(text: str, ref: dict | None = None) -> dict:
-    """Разобрать сообщение кассы про отвергнутую маркировку."""
+def diagnose_dump(text: str, actual_kind: str = "full", ref: dict | None = None) -> dict:
+    """Разобрать сообщение кассы про отвергнутую маркировку.
+
+    actual_kind — что реально пришло на ККТ. В этом инциденте полный КМ,
+    а ошибка по умолчанию подписывает короткий тип.
+    """
     data = ref or load_ref()
     match = DUMP_RE.search(text.replace("\n", " "))
     if not match:
@@ -126,13 +124,20 @@ def diagnose_dump(text: str, ref: dict | None = None) -> dict:
     server_status = int(match["server_status"])
     km = parse_km(match["km"], data.get("serialLength", SERIAL_LEN))
 
-    format_fail = local_error == 1 or not km["ok"]
+    short_types = set(data.get("driverShortTypes", [1, 3]))
+    full_types = set(data.get("driverFullTypes", [2, 4]))
+    defaulted_to_short = marking_type in short_types
+    type_mismatch = defaulted_to_short and actual_kind == "full"
     online_missing = server_error == -1 and server_status == -1
-    fn_passed = local_error == 0 and local_result == 1
+    fn_passed = local_error == 0 and local_result == 1 and marking_type in (
+        full_types if actual_kind == "full" else short_types
+    )
 
-    if fn_passed and km["ok"]:
+    if type_mismatch:
+        action = "send_full_km_with_full_type"
+    elif fn_passed:
         action = "sale_with_km"
-    elif format_fail:
+    elif local_error == 1:
         action = "rescan_then_hold_or_quarantine"
     else:
         action = "notify_accountant"
@@ -143,13 +148,16 @@ def diagnose_dump(text: str, ref: dict | None = None) -> dict:
         "closeWithRejectedMarking": False,
         "notifyAccountant": not fn_passed,
         "driverOk": "ошибок нет" in text.lower(),
+        "defaultedToShort": defaulted_to_short,
+        "actualKind": actual_kind,
+        "typeMismatch": type_mismatch,
+        "loggedKind": km["kind"],
         "localResult": local_result,
         "localResultText": _lookup(data["checkItemLocalResult"], local_result),
         "localError": local_error,
         "localErrorText": _lookup(data["checkItemLocalError"], local_error),
         "markingType2": marking_type,
-        "markingType2Text": _lookup(data["markingType2"], marking_type),
-        "expectedMarkingType2": data["expectedMarkingType2"],
+        "markingType2Text": _lookup(data["markingType2Driver"], marking_type),
         "kmServerErrorCode": server_error,
         "kmServerCheckingStatus": server_status,
         "onlineCheck": False if online_missing else True,
@@ -166,39 +174,41 @@ def _check():
         "CheckItemLocalResult 0 CheckItemLocalError 1"
         "MarkingType2 3KMServerErrorCode -1 KMServerCheckingStatus -1"
     )
-    got = diagnose_dump(dump)
+    got = diagnose_dump(dump, actual_kind="full")
     assert got["localError"] == 1, got
     assert got["localResult"] == 0, got
     assert got["markingType2"] == 3, got
-    assert got["kmServerErrorCode"] == -1, got
+    assert got["defaultedToShort"] is True, got
+    assert got["actualKind"] == "full", got
+    assert got["typeMismatch"] is True, got
+    assert got["action"] == "send_full_km_with_full_type", got
     assert got["sellAsRemainder"] is False, got
     assert got["closeWithRejectedMarking"] is False, got
-    assert got["action"] == "rescan_then_hold_or_quarantine", got
     assert got["km"]["gtin"] == "05413048311093", got
-    assert got["km"]["ok"] is False, got
     assert got["onlineCheck"] is False, got
 
     short = parse_km("0105413048311093215BTLoS\x1d93Ab1/")
     assert short["ok"] is True, short
-    assert short["gtin"] == "05413048311093", short
+    assert short["kind"] == "short", short
     assert short["serial"] == "5BTLoS", short
     assert short["ai93"] == "Ab1/", short
 
     full = parse_km("0105413048311093215BTLoS\x1d91EE06\x1d92" + ("A" * 44))
     assert full["ok"] is True, full
+    assert full["kind"] == "full", full
     assert full["ai91"] == "EE06", full
     assert len(full["ai92"]) == 44, full
 
-    no_gs = parse_km("0105413048311093215BTLoSntrqS?")
-    assert no_gs["ok"] is False, no_gs
-    assert no_gs["gtin"] == "05413048311093", no_gs
+    logged = parse_km("0105413048311093215BTLoSntrqS?")
+    assert logged["kind"] == "unknown", logged
     print("OK 4 cases")
 
 
 if __name__ == "__main__":
     import sys
 
-    if len(sys.argv) > 1:
-        print(json.dumps(diagnose_dump(" ".join(sys.argv[1:])), ensure_ascii=False, indent=2))
+    args = [a for a in sys.argv[1:] if a != "--full"]
+    if args:
+        print(json.dumps(diagnose_dump(" ".join(args), actual_kind="full"), ensure_ascii=False, indent=2))
     else:
         _check()

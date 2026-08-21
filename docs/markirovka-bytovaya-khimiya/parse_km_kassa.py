@@ -106,11 +106,17 @@ def parse_km(km: str, serial_len: int = SERIAL_LEN) -> dict:
     return result
 
 
-def diagnose_dump(text: str, actual_kind: str = "full", ref: dict | None = None) -> dict:
+def diagnose_dump(
+    text: str,
+    actual_kind: str = "full",
+    receipt_has_m: bool = True,
+    ref: dict | None = None,
+) -> dict:
     """Разобрать сообщение кассы про отвергнутую маркировку.
 
     actual_kind — что реально пришло на ККТ. В этом инциденте полный КМ,
     а ошибка по умолчанию подписывает короткий тип.
+    Чек при этом может закрыться с буквой М: это не успех проверки.
     """
     data = ref or load_ref()
     match = DUMP_RE.search(text.replace("\n", " "))
@@ -145,7 +151,10 @@ def diagnose_dump(text: str, actual_kind: str = "full", ref: dict | None = None)
     return {
         "action": action,
         "sellAsRemainder": False,
-        "closeWithRejectedMarking": False,
+        "closeWithRejectedMarking": receipt_has_m and not fn_passed,
+        "receiptHasM": receipt_has_m,
+        "receiptMIsSuccess": False,
+        "receiptMText": data.get("receiptMarkNote"),
         "notifyAccountant": not fn_passed,
         "driverOk": "ошибок нет" in text.lower(),
         "defaultedToShort": defaulted_to_short,
@@ -183,7 +192,9 @@ def _check():
     assert got["typeMismatch"] is True, got
     assert got["action"] == "send_full_km_with_full_type", got
     assert got["sellAsRemainder"] is False, got
-    assert got["closeWithRejectedMarking"] is False, got
+    assert got["closeWithRejectedMarking"] is True, got
+    assert got["receiptHasM"] is True, got
+    assert got["receiptMIsSuccess"] is False, got
     assert got["km"]["gtin"] == "05413048311093", got
     assert got["onlineCheck"] is False, got
 

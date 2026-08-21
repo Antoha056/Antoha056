@@ -9,13 +9,13 @@
                   exporter="StormBPMN compatible"
                   exporterVersion="1.0">
   <bpmn:category id="Category_1">
-    <bpmn:categoryValue id="CategoryValue_Cash" value="Касса: не закрывать отвергнутый КМ"/>
+    <bpmn:categoryValue id="CategoryValue_Cash" value="Касса: М в чеке не значит, что КМ принят"/>
     <bpmn:categoryValue id="CategoryValue_Type" value="Короткий в ошибке, полный на ФН"/>
     <bpmn:categoryValue id="CategoryValue_Cause" value="Сканер или сам код"/>
     <bpmn:categoryValue id="CategoryValue_Q" value="Карантин"/>
   </bpmn:category>
   <bpmn:process id="Process_KassaKm" name="Ошибка проверки КМ, маркировка будет отвергнута" isExecutable="false">
-    <bpmn:documentation>В ошибке ПО по умолчанию приписывает короткий КМ (MarkingType2 3), а на кассу приходит полный. ФН сверяет полный код с коротким шаблоном — LocalError 1. Тип брать со скана: 93 короткий, 91/92 полный. Полный буфер не резать. Не подменять артикул-остатком и не закрывать чек с отвергнутой маркировкой.</bpmn:documentation>
+    <bpmn:documentation>В ошибке ПО по умолчанию приписывает короткий КМ (MarkingType2 3), а на кассу приходит полный. ФН сверяет полный код с коротким шаблоном — LocalError 1. Чек при этом может закрыться с М: это не М+, вывод в ЧЗ не считать выполненным. Тип брать со скана: 93 короткий, 91/92 полный. Полный буфер не резать.</bpmn:documentation>
     <bpmn:group id="Group_Cash" categoryValueRef="CategoryValue_Cash"/>
     <bpmn:group id="Group_Type" categoryValueRef="CategoryValue_Type"/>
     <bpmn:group id="Group_Cause" categoryValueRef="CategoryValue_Cause"/>

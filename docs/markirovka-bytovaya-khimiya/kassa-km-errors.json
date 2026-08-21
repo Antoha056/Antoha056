@@ -9,6 +9,9 @@
   "gs": "ASCII 29, в логе часто выглядит как ?",
   "defaultInError": "short",
   "actualAtKkt": "full",
+  "receiptMark": "М",
+  "receiptMarkIsSuccess": false,
+  "receiptMarkNote": "М в чеке при отвергнутой проверке — позиция ушла как маркированная с отрицательным результатом, это не М+",
   "driverShortTypes": [1, 3],
   "driverFullTypes": [2, 4],
   "checkItemLocalResult": {

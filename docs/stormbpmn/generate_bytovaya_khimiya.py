@@ -851,9 +851,150 @@ def build_etapy_poster():
     print(f"Wrote {path}")
 
 
+def build_kassa_km():
+    Y_OK, Y, Y_IT, Y_Q = 80, 280, 480, 660
+
+    start = ev(40, Y)
+    scan = task(140, Y)
+    fn = task(340, Y)
+    gw_fn = gw(540, Y)
+    join_ok = gw(720, Y_OK)
+    to_ok = task(860, Y_OK)
+    end_ok = ev(1100, Y_OK)
+    rescan = task(660, Y)
+    gw_re = gw(860, Y)
+    gw_kind = gw(1040, Y)
+    type_fix = task(1180, Y_OK)
+    end_type = ev(1440, Y_OK)
+    parse = task(1180, Y)
+    gw_gs = gw(1400, Y)
+    scanner = task(1560, Y_IT)
+    end_it = ev(1820, Y_IT)
+    chz = task(1560, Y)
+    gw_chz = gw(1780, Y)
+    hold = task(1940, Y)
+    end_hold = ev(2180, Y)
+    quar = task(1940, Y_Q)
+    end_q = ev(2180, Y_Q)
+
+    nodes = [
+        ("StartEvent_1", "startEvent", "Старт", *start),
+        ("Task_Scan", "userTask", "Сканировать Data Matrix", *scan),
+        ("Task_FN", "serviceTask", "ФН проверяет формат КМ", *fn),
+        ("Gateway_FN", "exclusiveGateway", "LocalError 0 и Result 1?", *gw_fn),
+        ("Gateway_JoinOk", "exclusiveGateway", "", *join_ok),
+        ("Task_Ok", "serviceTask", "Строка с КИЗ в чек", *to_ok),
+        ("EndEvent_Ok", "endEvent", "Вывод через кассу", *end_ok),
+        ("Task_Rescan", "userTask", "Повторить скан той же единицы", *rescan),
+        ("Gateway_Rescan", "exclusiveGateway", "Повтор принят?", *gw_re),
+        ("Gateway_Kind", "exclusiveGateway", "В ошибке короткий, на ФН полный?", *gw_kind),
+        ("Task_TypeFix", "serviceTask", "Слать полный КМ, не короткий шаблон", *type_fix),
+        ("EndEvent_Type", "endEvent", "Тип взят со скана", *end_type),
+        ("Task_Parse", "serviceTask", "Разобрать GS и криптохвост", *parse),
+        ("Gateway_GS", "exclusiveGateway", "В КМ есть GS и 93 или 91/92?", *gw_gs),
+        ("Task_Scanner", "userTask", "Настроить сканер на ASCII 29", *scanner),
+        ("EndEvent_IT", "endEvent", "Продажа отложена, править сканер", *end_it),
+        ("Task_CHZ", "userTask", "Проверить КМ в Честном знаке", *chz),
+        ("Gateway_CHZ", "exclusiveGateway", "КМ наш и в обороте?", *gw_chz),
+        ("Task_Hold", "userTask", "Отложить единицу, вызвать IT", *hold),
+        ("EndEvent_Hold", "endEvent", "Не продавать как остаток", *end_hold),
+        ("Task_Quarantine", "userTask", "Карантин, уведомить бухгалтера", *quar),
+        ("EndEvent_Q", "endEvent", "Возврат поставщику", *end_q),
+    ]
+    node_box = {n[0]: (n[3], n[4], n[5], n[6]) for n in nodes}
+    flows = []
+
+    def add(fid, src, tgt, name, pts):
+        flows.append((fid, src, tgt, name, pts))
+
+    add("Flow_s1", "StartEvent_1", "Task_Scan", "", lr(node_box, "StartEvent_1", "Task_Scan"))
+    add("Flow_s2", "Task_Scan", "Task_FN", "", lr(node_box, "Task_Scan", "Task_FN"))
+    add("Flow_s3", "Task_FN", "Gateway_FN", "", lr(node_box, "Task_FN", "Gateway_FN"))
+
+    a, b = node_box["Gateway_FN"], node_box["Gateway_JoinOk"]
+    sx, sy = top(a)
+    tx, ty = left(b)
+    add("Flow_fn_yes", "Gateway_FN", "Gateway_JoinOk", "Да", [(sx, sy), (sx, ty), (tx, ty)])
+    add("Flow_fn_no", "Gateway_FN", "Task_Rescan", "Нет, ошибка формата", lr(node_box, "Gateway_FN", "Task_Rescan"))
+    add("Flow_r1", "Task_Rescan", "Gateway_Rescan", "", lr(node_box, "Task_Rescan", "Gateway_Rescan"))
+
+    a, b = node_box["Gateway_Rescan"], node_box["Gateway_JoinOk"]
+    sx, sy = top(a)
+    tx, ty = bottom(b)
+    add("Flow_re_yes", "Gateway_Rescan", "Gateway_JoinOk", "Да", [(sx, sy), (sx, ty), (tx, ty)])
+    add("Flow_join_ok", "Gateway_JoinOk", "Task_Ok", "", lr(node_box, "Gateway_JoinOk", "Task_Ok"))
+    add("Flow_ok_end", "Task_Ok", "EndEvent_Ok", "", lr(node_box, "Task_Ok", "EndEvent_Ok"))
+    add("Flow_re_no", "Gateway_Rescan", "Gateway_Kind", "Нет", lr(node_box, "Gateway_Rescan", "Gateway_Kind"))
+
+    a, b = node_box["Gateway_Kind"], node_box["Task_TypeFix"]
+    sx, sy = top(a)
+    tx, ty = left(b)
+    add("Flow_kind_yes", "Gateway_Kind", "Task_TypeFix", "Да, этот дамп", [(sx, sy), (sx, ty), (tx, ty)])
+    add("Flow_type_end", "Task_TypeFix", "EndEvent_Type", "", lr(node_box, "Task_TypeFix", "EndEvent_Type"))
+    add("Flow_kind_no", "Gateway_Kind", "Task_Parse", "Нет", lr(node_box, "Gateway_Kind", "Task_Parse"))
+    add("Flow_p1", "Task_Parse", "Gateway_GS", "", lr(node_box, "Task_Parse", "Gateway_GS"))
+
+    a, b = node_box["Gateway_GS"], node_box["Task_Scanner"]
+    sx, sy = bottom(a)
+    tx, ty = left(b)
+    add("Flow_gs_no", "Gateway_GS", "Task_Scanner", "Нет, сканер съел GS", [(sx, sy), (sx, ty), (tx, ty)])
+    add("Flow_it_end", "Task_Scanner", "EndEvent_IT", "", lr(node_box, "Task_Scanner", "EndEvent_IT"))
+    add("Flow_gs_yes", "Gateway_GS", "Task_CHZ", "Да", lr(node_box, "Gateway_GS", "Task_CHZ"))
+    add("Flow_c1", "Task_CHZ", "Gateway_CHZ", "", lr(node_box, "Task_CHZ", "Gateway_CHZ"))
+    add("Flow_chz_yes", "Gateway_CHZ", "Task_Hold", "Да", lr(node_box, "Gateway_CHZ", "Task_Hold"))
+    add("Flow_hold_end", "Task_Hold", "EndEvent_Hold", "", lr(node_box, "Task_Hold", "EndEvent_Hold"))
+
+    a, b = node_box["Gateway_CHZ"], node_box["Task_Quarantine"]
+    sx, sy = bottom(a)
+    tx, ty = left(b)
+    add("Flow_chz_no", "Gateway_CHZ", "Task_Quarantine", "Нет, брак кода", [(sx, sy), (sx, ty), (tx, ty)])
+    add("Flow_q_end", "Task_Quarantine", "EndEvent_Q", "", lr(node_box, "Task_Quarantine", "EndEvent_Q"))
+
+    groups = [
+        ("Group_Cash", "CategoryValue_Cash", "Касса: М в чеке не значит, что КМ принят", 120, 30, 980, 390),
+        ("Group_Type", "CategoryValue_Type", "Короткий в ошибке, полный на ФН", 1120, 30, 420, 200),
+        ("Group_Cause", "CategoryValue_Cause", "Сканер или сам код", 1540, 30, 760, 390),
+        ("Group_Q", "CategoryValue_Q", "Карантин", 1540, 600, 760, 160),
+    ]
+    doc = (
+        "В ошибке ПО по умолчанию приписывает короткий КМ (MarkingType2 3), "
+        "а на кассу приходит полный. ФН сверяет полный код с коротким шаблоном — LocalError 1. "
+        "Чек при этом может закрыться с М: это не М+, вывод в ЧЗ не считать выполненным. "
+        "Тип брать со скана: 93 короткий, 91/92 полный. Полный буфер не резать."
+    )
+    write_bpmn(
+        "/workspace/docs/stormbpmn/oshibka-proverki-km-kassa.bpmn",
+        "Definitions_KassaKm",
+        "Ошибка проверки КМ на кассе",
+        "Process_KassaKm",
+        "Ошибка проверки КМ, маркировка будет отвергнута",
+        doc,
+        nodes,
+        flows,
+        groups,
+        {"Gateway_JoinOk"},
+    )
+    write_svg(
+        "/workspace/docs/stormbpmn/oshibka-proverki-km-kassa.svg",
+        "Ошибка проверки КМ: короткий тип в ошибке, полный код на кассе",
+        2340,
+        820,
+        nodes,
+        flows,
+        [
+            (120, 30, 980, 390, "#eef6ff", "#5b8def", "Касса: повторный скан; М в чеке — не успех", 140, 52, "#2b5cb8"),
+            (1120, 30, 420, 200, "#fef3c7", "#b45309", "Снять шаблон «короткий»", 1140, 52, "#92400e"),
+            (1540, 30, 760, 390, "#fff7ed", "#c2410c", "Нет GS — сканер. Код в ЧЗ — IT", 1560, 52, "#9a3412"),
+            (1540, 600, 760, 160, "#fef2f2", "#b91c1c", "Карантин, уведомить бухгалтера", 1560, 622, "#991b1b"),
+        ],
+        "MarkingType2 3 — короткий тип по умолчанию, на ФН полный КМ. М в чеке при LocalError 1 — отвергнутая маркировка, не М+.",
+    )
+
+
 if __name__ == "__main__":
     build_priemka()
     build_outbound()
     build_etap()
     build_etapy_poster()
+    build_kassa_km()
 

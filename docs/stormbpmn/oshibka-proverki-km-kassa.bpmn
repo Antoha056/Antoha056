@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_KassaKm"
+                  name="Ошибка проверки КМ на кассе"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="StormBPMN compatible"
+                  exporterVersion="1.0">
+  <bpmn:category id="Category_1">
+    <bpmn:categoryValue id="CategoryValue_Cash" value="Касса: М в чеке не значит, что КМ принят"/>
+    <bpmn:categoryValue id="CategoryValue_Type" value="Короткий в ошибке, полный на ФН"/>
+    <bpmn:categoryValue id="CategoryValue_Cause" value="Сканер или сам код"/>
+    <bpmn:categoryValue id="CategoryValue_Q" value="Карантин"/>
+  </bpmn:category>
+  <bpmn:process id="Process_KassaKm" name="Ошибка проверки КМ, маркировка будет отвергнута" isExecutable="false">
+    <bpmn:documentation>В ошибке ПО по умолчанию приписывает короткий КМ (MarkingType2 3), а на кассу приходит полный. ФН сверяет полный код с коротким шаблоном — LocalError 1. Чек при этом может закрыться с М: это не М+, вывод в ЧЗ не считать выполненным. Тип брать со скана: 93 короткий, 91/92 полный. Полный буфер не резать.</bpmn:documentation>
+    <bpmn:group id="Group_Cash" categoryValueRef="CategoryValue_Cash"/>
+    <bpmn:group id="Group_Type" categoryValueRef="CategoryValue_Type"/>
+    <bpmn:group id="Group_Cause" categoryValueRef="CategoryValue_Cause"/>
+    <bpmn:group id="Group_Q" categoryValueRef="CategoryValue_Q"/>
+    <bpmn:startEvent id="StartEvent_1" name="Старт" />
+    <bpmn:userTask id="Task_Scan" name="Сканировать Data Matrix" />
+    <bpmn:serviceTask id="Task_FN" name="ФН проверяет формат КМ" />
+    <bpmn:exclusiveGateway id="Gateway_FN" name="LocalError 0 и Result 1?" gatewayDirection="Diverging" />
+    <bpmn:exclusiveGateway id="Gateway_JoinOk" gatewayDirection="Converging" />
+    <bpmn:serviceTask id="Task_Ok" name="Строка с КИЗ в чек" />
+    <bpmn:endEvent id="EndEvent_Ok" name="Вывод через кассу" />
+    <bpmn:userTask id="Task_Rescan" name="Повторить скан той же единицы" />
+    <bpmn:exclusiveGateway id="Gateway_Rescan" name="Повтор принят?" gatewayDirection="Diverging" />
+    <bpmn:exclusiveGateway id="Gateway_Kind" name="В ошибке короткий, на ФН полный?" gatewayDirection="Diverging" />
+    <bpmn:serviceTask id="Task_TypeFix" name="Слать полный КМ, не короткий шаблон" />
+    <bpmn:endEvent id="EndEvent_Type" name="Тип взят со скана" />
+    <bpmn:serviceTask id="Task_Parse" name="Разобрать GS и криптохвост" />
+    <bpmn:exclusiveGateway id="Gateway_GS" name="В КМ есть GS и 93 или 91/92?" gatewayDirection="Diverging" />
+    <bpmn:userTask id="Task_Scanner" name="Настроить сканер на ASCII 29" />
+    <bpmn:endEvent id="EndEvent_IT" name="Продажа отложена, править сканер" />
+    <bpmn:userTask id="Task_CHZ" name="Проверить КМ в Честном знаке" />
+    <bpmn:exclusiveGateway id="Gateway_CHZ" name="КМ наш и в обороте?" gatewayDirection="Diverging" />
+    <bpmn:userTask id="Task_Hold" name="Отложить единицу, вызвать IT" />
+    <bpmn:endEvent id="EndEvent_Hold" name="Не продавать как остаток" />
+    <bpmn:userTask id="Task_Quarantine" name="Карантин, уведомить бухгалтера" />
+    <bpmn:endEvent id="EndEvent_Q" name="Возврат поставщику" />
+    <bpmn:sequenceFlow id="Flow_s1" sourceRef="StartEvent_1" targetRef="Task_Scan" />
+    <bpmn:sequenceFlow id="Flow_s2" sourceRef="Task_Scan" targetRef="Task_FN" />
+    <bpmn:sequenceFlow id="Flow_s3" sourceRef="Task_FN" targetRef="Gateway_FN" />
+    <bpmn:sequenceFlow id="Flow_fn_yes" sourceRef="Gateway_FN" targetRef="Gateway_JoinOk" name="Да" />
+    <bpmn:sequenceFlow id="Flow_fn_no" sourceRef="Gateway_FN" targetRef="Task_Rescan" name="Нет, ошибка формата" />
+    <bpmn:sequenceFlow id="Flow_r1" sourceRef="Task_Rescan" targetRef="Gateway_Rescan" />
+    <bpmn:sequenceFlow id="Flow_re_yes" sourceRef="Gateway_Rescan" targetRef="Gateway_JoinOk" name="Да" />
+    <bpmn:sequenceFlow id="Flow_join_ok" sourceRef="Gateway_JoinOk" targetRef="Task_Ok" />
+    <bpmn:sequenceFlow id="Flow_ok_end" sourceRef="Task_Ok" targetRef="EndEvent_Ok" />
+    <bpmn:sequenceFlow id="Flow_re_no" sourceRef="Gateway_Rescan" targetRef="Gateway_Kind" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_kind_yes" sourceRef="Gateway_Kind" targetRef="Task_TypeFix" name="Да, этот дамп" />
+    <bpmn:sequenceFlow id="Flow_type_end" sourceRef="Task_TypeFix" targetRef="EndEvent_Type" />
+    <bpmn:sequenceFlow id="Flow_kind_no" sourceRef="Gateway_Kind" targetRef="Task_Parse" name="Нет" />
+    <bpmn:sequenceFlow id="Flow_p1" sourceRef="Task_Parse" targetRef="Gateway_GS" />
+    <bpmn:sequenceFlow id="Flow_gs_no" sourceRef="Gateway_GS" targetRef="Task_Scanner" name="Нет, сканер съел GS" />
+    <bpmn:sequenceFlow id="Flow_it_end" sourceRef="Task_Scanner" targetRef="EndEvent_IT" />
+    <bpmn:sequenceFlow id="Flow_gs_yes" sourceRef="Gateway_GS" targetRef="Task_CHZ" name="Да" />
+    <bpmn:sequenceFlow id="Flow_c1" sourceRef="Task_CHZ" targetRef="Gateway_CHZ" />
+    <bpmn:sequenceFlow id="Flow_chz_yes" sourceRef="Gateway_CHZ" targetRef="Task_Hold" name="Да" />
+    <bpmn:sequenceFlow id="Flow_hold_end" sourceRef="Task_Hold" targetRef="EndEvent_Hold" />
+    <bpmn:sequenceFlow id="Flow_chz_no" sourceRef="Gateway_CHZ" targetRef="Task_Quarantine" name="Нет, брак кода" />
+    <bpmn:sequenceFlow id="Flow_q_end" sourceRef="Task_Quarantine" targetRef="EndEvent_Q" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1" name="Ошибка проверки КМ на кассе">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_KassaKm">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="40.0" y="301.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Scan_di" bpmnElement="Task_Scan">
+        <dc:Bounds x="140.0" y="280.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FN_di" bpmnElement="Task_FN">
+        <dc:Bounds x="340.0" y="280.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_FN_di" bpmnElement="Gateway_FN" isMarkerVisible="true">
+        <dc:Bounds x="540.0" y="294.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_JoinOk_di" bpmnElement="Gateway_JoinOk" isMarkerVisible="true">
+        <dc:Bounds x="720.0" y="94.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Ok_di" bpmnElement="Task_Ok">
+        <dc:Bounds x="860.0" y="80.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Ok_di" bpmnElement="EndEvent_Ok">
+        <dc:Bounds x="1100.0" y="101.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Rescan_di" bpmnElement="Task_Rescan">
+        <dc:Bounds x="660.0" y="280.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Rescan_di" bpmnElement="Gateway_Rescan" isMarkerVisible="true">
+        <dc:Bounds x="860.0" y="294.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Kind_di" bpmnElement="Gateway_Kind" isMarkerVisible="true">
+        <dc:Bounds x="1040.0" y="294.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_TypeFix_di" bpmnElement="Task_TypeFix">
+        <dc:Bounds x="1180.0" y="80.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Type_di" bpmnElement="EndEvent_Type">
+        <dc:Bounds x="1440.0" y="101.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Parse_di" bpmnElement="Task_Parse">
+        <dc:Bounds x="1180.0" y="280.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_GS_di" bpmnElement="Gateway_GS" isMarkerVisible="true">
+        <dc:Bounds x="1400.0" y="294.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Scanner_di" bpmnElement="Task_Scanner">
+        <dc:Bounds x="1560.0" y="480.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_IT_di" bpmnElement="EndEvent_IT">
+        <dc:Bounds x="1820.0" y="501.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CHZ_di" bpmnElement="Task_CHZ">
+        <dc:Bounds x="1560.0" y="280.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_CHZ_di" bpmnElement="Gateway_CHZ" isMarkerVisible="true">
+        <dc:Bounds x="1780.0" y="294.0" width="50.0" height="50.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Hold_di" bpmnElement="Task_Hold">
+        <dc:Bounds x="1940.0" y="280.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Hold_di" bpmnElement="EndEvent_Hold">
+        <dc:Bounds x="2180.0" y="301.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Quarantine_di" bpmnElement="Task_Quarantine">
+        <dc:Bounds x="1940.0" y="660.0" width="160.0" height="78.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Q_di" bpmnElement="EndEvent_Q">
+        <dc:Bounds x="2180.0" y="681.0" width="36.0" height="36.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Group_Cash_di" bpmnElement="Group_Cash">
+        <dc:Bounds x="120.0" y="30.0" width="980.0" height="390.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Group_Type_di" bpmnElement="Group_Type">
+        <dc:Bounds x="1120.0" y="30.0" width="420.0" height="200.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Group_Cause_di" bpmnElement="Group_Cause">
+        <dc:Bounds x="1540.0" y="30.0" width="760.0" height="390.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Group_Q_di" bpmnElement="Group_Q">
+        <dc:Bounds x="1540.0" y="600.0" width="760.0" height="160.0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_s1_di" bpmnElement="Flow_s1">
+          <di:waypoint x="76.0" y="319.0" />
+          <di:waypoint x="140.0" y="319.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s2_di" bpmnElement="Flow_s2">
+          <di:waypoint x="300.0" y="319.0" />
+          <di:waypoint x="340.0" y="319.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s3_di" bpmnElement="Flow_s3">
+          <di:waypoint x="500.0" y="319.0" />
+          <di:waypoint x="540.0" y="319.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_fn_yes_di" bpmnElement="Flow_fn_yes">
+          <di:waypoint x="565.0" y="294.0" />
+          <di:waypoint x="565.0" y="119.0" />
+          <di:waypoint x="720.0" y="119.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="581.7" y="101.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_fn_no_di" bpmnElement="Flow_fn_no">
+          <di:waypoint x="590.0" y="319.0" />
+          <di:waypoint x="660.0" y="319.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="541.0" y="301.0" width="168.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_r1_di" bpmnElement="Flow_r1">
+          <di:waypoint x="820.0" y="319.0" />
+          <di:waypoint x="860.0" y="319.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_re_yes_di" bpmnElement="Flow_re_yes">
+          <di:waypoint x="885.0" y="294.0" />
+          <di:waypoint x="885.0" y="144.0" />
+          <di:waypoint x="745.0" y="144.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="803.3" y="126.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_join_ok_di" bpmnElement="Flow_join_ok">
+          <di:waypoint x="770.0" y="119.0" />
+          <di:waypoint x="860.0" y="119.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ok_end_di" bpmnElement="Flow_ok_end">
+          <di:waypoint x="1020.0" y="119.0" />
+          <di:waypoint x="1100.0" y="119.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_re_no_di" bpmnElement="Flow_re_no">
+          <di:waypoint x="910.0" y="319.0" />
+          <di:waypoint x="1040.0" y="319.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="940.0" y="301.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_kind_yes_di" bpmnElement="Flow_kind_yes">
+          <di:waypoint x="1065.0" y="294.0" />
+          <di:waypoint x="1065.0" y="119.0" />
+          <di:waypoint x="1180.0" y="119.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1043.3" y="101.0" width="120.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_type_end_di" bpmnElement="Flow_type_end">
+          <di:waypoint x="1340.0" y="119.0" />
+          <di:waypoint x="1440.0" y="119.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_kind_no_di" bpmnElement="Flow_kind_no">
+          <di:waypoint x="1090.0" y="319.0" />
+          <di:waypoint x="1180.0" y="319.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1100.0" y="301.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_p1_di" bpmnElement="Flow_p1">
+          <di:waypoint x="1340.0" y="319.0" />
+          <di:waypoint x="1400.0" y="319.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_gs_no_di" bpmnElement="Flow_gs_no">
+          <di:waypoint x="1425.0" y="344.0" />
+          <di:waypoint x="1425.0" y="519.0" />
+          <di:waypoint x="1560.0" y="519.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1386.0" y="326.0" width="168.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_it_end_di" bpmnElement="Flow_it_end">
+          <di:waypoint x="1720.0" y="519.0" />
+          <di:waypoint x="1820.0" y="519.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_gs_yes_di" bpmnElement="Flow_gs_yes">
+          <di:waypoint x="1450.0" y="319.0" />
+          <di:waypoint x="1560.0" y="319.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1470.0" y="301.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_c1_di" bpmnElement="Flow_c1">
+          <di:waypoint x="1720.0" y="319.0" />
+          <di:waypoint x="1780.0" y="319.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_chz_yes_di" bpmnElement="Flow_chz_yes">
+          <di:waypoint x="1830.0" y="319.0" />
+          <di:waypoint x="1940.0" y="319.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1850.0" y="301.0" width="70.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_hold_end_di" bpmnElement="Flow_hold_end">
+          <di:waypoint x="2100.0" y="319.0" />
+          <di:waypoint x="2180.0" y="319.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_chz_no_di" bpmnElement="Flow_chz_no">
+          <di:waypoint x="1805.0" y="344.0" />
+          <di:waypoint x="1805.0" y="699.0" />
+          <di:waypoint x="1940.0" y="699.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1786.0" y="326.0" width="128.0" height="16" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_q_end_di" bpmnElement="Flow_q_end">
+          <di:waypoint x="2100.0" y="699.0" />
+          <di:waypoint x="2180.0" y="699.0" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

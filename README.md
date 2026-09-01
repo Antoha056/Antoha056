@@ -1,5 +1,11 @@
 # Antoha056
 
+## Тикеты за сентябрь 2026
+
+JQL: созданные в сентябре, открытые со прошлого периода, **и те, у кого статус менялся в сентябре** (даже если уже Done / Released).
+
+Фильтр: [docs/jira-sentyabr-2026.md](docs/jira-sentyabr-2026.md)
+
 ## Итого: маркировка бытовой химии
 
 Полный ответ: [docs/markirovka-bytovaya-khimiya/ITOGO.md](docs/markirovka-bytovaya-khimiya/ITOGO.md)

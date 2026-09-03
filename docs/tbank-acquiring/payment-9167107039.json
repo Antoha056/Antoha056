@@ -1,0 +1,17 @@
+{
+  "Success": true,
+  "ErrorCode": "0",
+  "Message": "OK",
+  "TerminalKey": "1579864014451",
+  "Status": "AUTHORIZED",
+  "PaymentId": "9167107039",
+  "OrderId": "49332682",
+  "Amount": 90000,
+  "AmountRubles": 900.0,
+  "Params": {
+    "Route": "ACQ",
+    "Source": "cards"
+  },
+  "Paid": false,
+  "NextAction": "confirm_or_cancel"
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello — учимся читать код</title>
+    <style>
+      body {
+        font-family: Georgia, "Times New Roman", serif;
+        max-width: 420px;
+        margin: 48px auto;
+        padding: 0 16px;
+        line-height: 1.5;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 12px;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 8px 16px;
+        cursor: pointer;
+      }
+      #message {
+        margin-top: 16px;
+        min-height: 1.5em;
+      }
+      .error {
+        color: #b00020;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Hello</h1>
+    <p>Самая маленькая фича: введи имя и нажми кнопку.</p>
+
+    <label for="name">Имя</label>
+    <input id="name" type="text" placeholder="Например, Антон" />
+    <button id="greet" type="button">Поздороваться</button>
+    <p id="message" aria-live="polite"></p>
+
+    <script>
+      const nameInput = document.getElementById("name");
+      const greetButton = document.getElementById("greet");
+      const message = document.getElementById("message");
+
+      function greet() {
+        const name = nameInput.value.trim();
+
+        if (!name) {
+          message.textContent = "Сначала введи имя.";
+          message.className = "error";
+          return;
+        }
+
+        message.textContent = "Привет, " + name + "!";
+        message.className = "";
+      }
+
+      greetButton.addEventListener("click", greet);
+    </script>
+  </body>
+</html>

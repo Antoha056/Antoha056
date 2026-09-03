@@ -1,5 +1,11 @@
 # Antoha056
 
+## Итого: платёж Т‑Банка AUTHORIZED
+
+Полный ответ: [docs/tbank-acquiring/ITOGO.md](docs/tbank-acquiring/ITOGO.md)
+
+Коротко: заказ `49332682` на **900,00 ₽** картой (`ACQ` / `cards`). `Success=true` — это ответ API, не списание. Статус `AUTHORIZED` — холд. Считать оплаченным только после `CONFIRMED` (метод Confirm). Иначе Cancel или сгорание холда.
+
 ## Итого: маркировка бытовой химии
 
 Полный ответ: [docs/markirovka-bytovaya-khimiya/ITOGO.md](docs/markirovka-bytovaya-khimiya/ITOGO.md)

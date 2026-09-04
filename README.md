@@ -2,7 +2,10 @@
 
 ## Маркированный товар в автосервис
 
-Кто выводит КИЗы из оборота, если продавец продаёт маркированный товар автосервису, а сервис использует его как материал в услуге: [docs/markirovka-avtoservis/vyvod-iz-oborota.html](docs/markirovka-avtoservis/vyvod-iz-oborota.html)
+Кто выводит КИЗы из оборота, если продавец продаёт маркированный товар автосервису, а сервис использует его как материал в услуге:
+
+- HTML: [docs/markirovka-avtoservis/vyvod-iz-oborota.html](docs/markirovka-avtoservis/vyvod-iz-oborota.html)
+- PDF: [docs/markirovka-avtoservis/vyvod-iz-oborota.pdf](docs/markirovka-avtoservis/vyvod-iz-oborota.pdf)
 
 ## Итого: маркировка бытовой химии
 

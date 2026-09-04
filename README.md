@@ -2,7 +2,8 @@
 
 ## Совещание: разделение СТО и магазина
 
-Читаемый протокол по расшифровке: [docs/soveshanie-razdelenie-sto-magazin.md](docs/soveshanie-razdelenie-sto-magazin.md)
+- Читаемый транскрипт по аудио: [docs/soveshanie-2026-09-04-transcript.md](docs/soveshanie-2026-09-04-transcript.md)
+- Смысловой протокол: [docs/soveshanie-razdelenie-sto-magazin.md](docs/soveshanie-razdelenie-sto-magazin.md)
 
 ## Итого: маркировка бытовой химии
 

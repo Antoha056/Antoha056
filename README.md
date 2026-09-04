@@ -1,5 +1,9 @@
 # Antoha056
 
+## Совещание: разделение СТО и магазина
+
+Читаемый протокол по расшифровке: [docs/soveshanie-razdelenie-sto-magazin.md](docs/soveshanie-razdelenie-sto-magazin.md)
+
 ## Итого: маркировка бытовой химии
 
 Полный ответ: [docs/markirovka-bytovaya-khimiya/ITOGO.md](docs/markirovka-bytovaya-khimiya/ITOGO.md)
